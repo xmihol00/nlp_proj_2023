@@ -15,7 +15,7 @@
 * **Large text**: Extract post from different subreddits/twitter accounts and parse into schema
 * **Pipelines**: 
 	1. Find sentiment/emotion of a post + comment section (maybe find out what was the trigger) 
-	2. ** Entity recognition **: Parse result in a schema like 
+	2. **Entity recognition**: Parse result in a schema like 
 	```
 	subredditId: str,
 	userId: str,
