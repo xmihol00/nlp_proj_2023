@@ -52,13 +52,24 @@ class ImsdbSpider(CrawlSpider):
         soup = BeautifulSoup(response.text)
         imdbs_box = soup.find(text="Genres").parent.parent
         links = imdbs_box.find_all("a")
+        title = (
+            response.url.split("/")[-1]
+            .replace("%20Script.html", "")
+            .replace("%20", " ")
+        )
         genres = self._get_genres_from_links(links)
         script = self._get_script_from_links(links)
-        # TODO SAVE FILE IN SOME FORMAT
+        yield {"title": title, "genre": genres, "script": script}
 
 
 def main():
-    process = CrawlerProcess()
+    process = CrawlerProcess(
+        settings={
+            "FEEDS": {
+                "./data/scraped_imsdb_data.json": {"format": "json"},
+            },
+        }
+    )
     process.crawl(ImsdbSpider)
     process.start()
     pass
