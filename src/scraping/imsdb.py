@@ -46,7 +46,11 @@ class ImsdbSpider(CrawlSpider):
                 script_link = self.base_url + link.get("href")
         response = urllib.request.urlopen(script_link)
         soup = BeautifulSoup(response, "html.parser")
-        return re.sub(r"(\s+|(\\r\\n)+)" , " ", str(soup.find("td", {"class": "scrtext"}).find("pre").contents)).replace('"', '').replace("\\'", "'")
+        return re.sub(r"(,\s'\s',\s)|(\s',\s)|(\s'\s)|(\s,\s)|\s+", " ", 
+                        re.sub(r"\s+|(\\r\\n)+", " ", 
+                                    str(soup.find("td", {"class": "scrtext"}).find("pre").contents).replace('"', '')
+                                                                                                   .replace("\\'", "'")))
+                  
 
     def parse_item(self, response):
         soup = BeautifulSoup(response.text)
