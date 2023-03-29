@@ -5,9 +5,14 @@ with open("./data/scraped_imsdb_data.json", "r") as f:
     data = json.load(f)
 
 for sample in data:
-    sample["script"] = re.sub(r"((,\s'\s',\s)|(\s',\s)|(\s'\s)|(\s,\s)|(\s+))", " ", 
-                              re.sub(r"\s+|(\\r\\n)+", " ", 
-                                     re.sub(r"((\")|(\\t)|(\[')|('\])|(--)|(\[)|(\]))", "", sample["script"].replace("\\'", "'"))))
+    # removal of some character combinations that are not useful
+    sample["script"] = re.sub(r"\\'", "'", sample["script"])
+    sample["script"] = re.sub(r"((\")|(\\t)|(\[')|('\])|(--)|(\[)|(\]))", "", sample["script"])
+    sample["script"] = re.sub(r"((\s+)|(\\r\\n)+)", " ", sample["script"])
+    sample["script"] = re.sub(r"((,\s'\s',\s)|(\s',\s)|(\s'\s)|(\s,\s))", " ", sample["script"])
+    sample["script"] = re.sub(r"((\s')|('\s))", " ", sample["script"])
+    # converting whole words in uppercase to lowercase
+    sample["script"] = re.sub(r"[A-Z]{2,}", lambda x: x.group().lower(), sample["script"])
 
 with open("./data/characters_cleaned_imsdb_data.json", "w") as f:
     json.dump(data, f, indent=2)
