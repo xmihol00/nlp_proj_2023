@@ -64,23 +64,24 @@ class DailyscriptScraper:
             )
             for item in tqdm(title_link_collection):
                 title = item["title"]
+                link = item["link"]
                 if self._title_already_scraped(title):
                     continue
-                
-                link = item["link"]
                 if "html" not in link:
                     continue
                 try:
                     genres = self._get_genres_from_first_imdb_result(title)
                     script = self._get_script(link)
+                    yield title, script, genres
                 except GenreError:
                     print(f"Genres not found for {title}")
                     continue
                 except ScriptError:
                     print(f"Script error for {title}")
                     continue
-
-                yield title, script, genres
+                except Exception as e:
+                    print(e)
+                    continue
 
     def _get_script(self, url):
         soup = self._get_soup(url)
