@@ -1,7 +1,7 @@
 import re
 import json
 
-with open("./data/scraped_imsdb_data.json", "r") as f:
+with open("./data/datasets/scraped_imsdb_data.json", "r") as f:
     data = json.load(f)
 
 for sample in data:
@@ -14,5 +14,5 @@ for sample in data:
     # converting whole words in uppercase to lowercase
     sample["script"] = re.sub(r"[A-Z]{2,}", lambda x: x.group().lower(), sample["script"])
 
-with open("./data/characters_cleaned_imsdb_data.json", "w") as f:
+with open("./data/datasets/characters_cleaned_imsdb_data.json", "w") as f:
     json.dump(data, f, indent=2)

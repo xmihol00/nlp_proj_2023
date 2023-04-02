@@ -66,7 +66,7 @@ def main():
     process = CrawlerProcess(
         settings={
             "FEEDS": {
-                "./data/scraped_imsdb_data.json": {"format": "json"},
+                "./data/datasets/scraped_imsdb_data.json": {"format": "json"},
             },
         }
     )
