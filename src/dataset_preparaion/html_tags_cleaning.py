@@ -1,7 +1,7 @@
 import re
 import json
 
-with open("./data/characters_cleaned_imsdb_data.json", "r") as f:
+with open("./data/datasets/characters_cleaned_imsdb_data.json", "r") as f:
     data = json.load(f)
 
 for sample in data:
@@ -9,5 +9,5 @@ for sample in data:
                               r"(<head>)|(</head>)|(<body.*?>)|(</body>)|(<pre>)|(</pre>))", "", sample["script"], re.DOTALL)
     sample["script"] = re.sub(r"(<b>.*?</b>)", "", sample["script"])
 
-with open("./data/html_tags_cleaned_imsdb_data.json", "w") as f:
+with open("./data/datasets/html_tags_cleaned_imsdb_data.json", "w") as f:
     json.dump(data, f, indent=2)
