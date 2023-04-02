@@ -1,22 +1,23 @@
-import time
 from tqdm import tqdm
 import os
-from typing import Optional
 import urllib.error
 import urllib.request
 import json
 
 from bs4 import BeautifulSoup
 
+
 class GenreError(Exception):
     pass
+
 
 class ScriptError(Exception):
     pass
 
+
 class DailyscriptScraper:
     domain = "https://www.dailyscript.com/"
-    file_name = "./data/scraped_dailyscript_data.json"
+    out_file = "./data/scraped_dailyscript_data.json"
 
     def _get_soup(self, search_query):
         resp = urllib.request.urlopen(search_query)
@@ -25,7 +26,7 @@ class DailyscriptScraper:
 
     def _title_already_scraped(self, title):
         try:
-            with open(self.file_name, mode="r+") as f:
+            with open(self.out_file, mode="r+") as f:
                 data = json.load(f)
                 for d in data:
                     if d["title"] == title:
@@ -92,8 +93,7 @@ class DailyscriptScraper:
         elif body is not None:
             return body.text
         else:
-            raise 
-
+            raise
 
     def _get_genres_from_first_imdb_result(self, title: str):
         parsed_title = title.replace(" ", "+")
@@ -110,22 +110,22 @@ class DailyscriptScraper:
         return genres
 
     def _save_data(self, **kwargs):
-        if not os.path.exists(self.file_name):
-            with open(self.file_name, mode="w") as f:
+        if not os.path.exists(self.out_file):
+            with open(self.out_file, mode="w") as f:
                 json.dump([kwargs], f)
         else:
-            with open(self.file_name, mode="r+") as f:
+            with open(self.out_file, mode="r+") as f:
                 data = json.load(f)
                 data.append(kwargs)
                 f.seek(0)
                 json.dump(data, f)
 
-    def run(self):
-        for title, script, genres in self._get_movie_scripts_and_genres():
-            self._save_data(title=title, script=script, genres=genres)
-            print("Wrote: ", title)
+    def run(self, overwrite=False):
+        if overwrite or not os.path.exists(self.out_file):
+            for title, script, genres in self._get_movie_scripts_and_genres():
+                self._save_data(title=title, script=script, genres=genres)
 
 
 if __name__ == "__main__":
     scraper = DailyscriptScraper()
-    scraper.run()
+    scraper.run(overwrite=True)
