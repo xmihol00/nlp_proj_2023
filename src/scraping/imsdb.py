@@ -1,4 +1,5 @@
 import re
+import os
 import urllib.request
 from typing import List
 from bs4 import BeautifulSoup
@@ -59,21 +60,24 @@ class ImsdbSpider(CrawlSpider):
         )
         genres = self._get_genres_from_links(links)
         script = self._get_script_from_links(links)
-        yield {"title": title, "genre": genres, "script": script}
+        yield {"title": title, "genres": genres, "script": script}
 
 
-def main():
-    process = CrawlerProcess(
-        settings={
-            "FEEDS": {
-                "./data/scraped_imsdb_data.json": {"format": "json"},
-            },
-        }
-    )
-    process.crawl(ImsdbSpider)
-    process.start()
-    pass
+class ImsdbScraper():
+    out_file = "./data/scraped_imsdb_data.json"
+
+    def run(self, overwrite=False):
+        if overwrite or not os.path.exists(self.out_file):
+            process = CrawlerProcess(
+                settings={
+                    "FEEDS": {
+                        "./data/scraped_imsdb_data.json": {"format": "json"},
+                    },
+                }
+            )
+            process.crawl(ImsdbSpider)
+            process.start()
 
 
 if __name__ == "__main__":
-    main()
+    ImsdbScraper().run(overwrite=True)
