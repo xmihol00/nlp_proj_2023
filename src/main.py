@@ -1,9 +1,10 @@
 from typing import List
-import pandas as pd
-from src.dataset_preparaion.pipeline import MovieScriptPreprocessor, SampleT
-from src.scraping.imsdb import ImsdbScraper
-from src.scraping.dailyscript import DailyscriptScraper
 
+import pandas as pd
+
+from src.dataset_preparaion.pipeline import MovieScriptPreprocessor, SampleT
+from src.scraping.dailyscript import DailyscriptScraper
+from src.scraping.imsdb import ImsdbScraper
 
 if __name__ == "__main__":
     scrapers = [
