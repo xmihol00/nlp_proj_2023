@@ -9,4 +9,5 @@ python3 src/dataset_preparaion/description_cleaning.py
 python3 src/dataset_preparaion/stopwards_removal.py
 python3 src/dataset_preparaion/stemming.py
 python3 src/dataset_preparaion/single_character_cleaning.py 
+python3 src/dataset_preparaion/labels_cleaning.py
  

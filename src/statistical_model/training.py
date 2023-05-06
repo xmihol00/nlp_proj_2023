@@ -33,5 +33,5 @@ if NORMALIZE:
         for word in genres_word_counts[genre]:
             genres_word_counts[genre][word] /= sum
 
-with open("./data/statistical_model/genres_word_counts.json", "w") as f:
+with open("./models/statistical/genres_word_counts.json", "w") as f:
     json.dump(genres_word_counts, f, indent=2)

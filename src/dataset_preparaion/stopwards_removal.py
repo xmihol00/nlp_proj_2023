@@ -1,7 +1,7 @@
 import nltk
 import json
 
-stopwords = set(nltk.corpus.stopwords.words('english'))
+stopwords = set(nltk.corpus.stopwords.words("english"))
 with open("./data/datasets/description_cleaned_imsdb_data.json", "r") as f:
     data = json.load(f)
 

@@ -131,3 +131,6 @@ dmypy.json
 data/
 *.toml
 *.lock
+
+models/
+script.txt
