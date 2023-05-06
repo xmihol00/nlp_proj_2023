@@ -134,3 +134,4 @@ data/
 
 models/
 script.txt
+*.toml
