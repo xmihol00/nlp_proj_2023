@@ -8,20 +8,28 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import hash_model_name_and_labels
 
-def train(model_name: str, genres: list[str]):
+def train(model_name: str, genres: list[str], dataset: str):
     # load genres and select indices of the genres to train on
-    with open("./data/sentence_transformer_model/genres.json", "r") as f:
-        all_genres = json.load(f)
+
+    if dataset == "all":
+        with open("./data/sentence_transformer_model/imsdb/genres.json", "r") as f:
+            all_genres = json.load(f)    
+        with open("./data/sentence_transformer_model/dailyscript/genres.json", "r") as f:
+            all_genres += json.load(f)
+        all_genres = sorted(list(set(all_genres)))
+    else:
+        with open(f"./data/sentence_transformer_model/{dataset}/genres.json", "r") as f:
+            all_genres = json.load(f)
 
     config = {}
     if len(genres) == 0:
         genres_indices = list(range(len(all_genres)))
-        dir_name = hash_model_name_and_labels(model_name, all_genres)
+        dir_name = hash_model_name_and_labels(model_name, all_genres, dataset)
     else:
         picked_genres = sorted(list(set(map(lambda x: x.strip(), genres))))
         picked_genres = [ genre for genre in picked_genres if genre in all_genres ]
         genres_indices = [ all_genres.index(genre) for genre in picked_genres ]
-        dir_name = hash_model_name_and_labels(model_name, picked_genres)
+        dir_name = hash_model_name_and_labels(model_name, picked_genres, dataset)
         all_genres = picked_genres
 
     config["genres"] = all_genres
@@ -29,16 +37,29 @@ def train(model_name: str, genres: list[str]):
     config["model"] = model_name
     config["hash"] = dir_name
 
-    full_dir_name = f"models/sentence_transformer/{dir_name}/"
+    full_dir_name = f"models/sentence_transformer/{dir_name}"
     os.makedirs(full_dir_name, exist_ok=True)
 
-    # load train dataset
-    X_train = np.load(f"./data/sentence_transformer_model/X_train_embeddings_{model_name}.npy")
-    y_train = np.load(f"./data/sentence_transformer_model/y_train_labels.npy")
+    if dataset == "all":
+        # load train dataset
+        X_train = np.load(f"./data/sentence_transformer_model/imsdb/X_train_embeddings_{model_name}.npy")
+        y_train = np.load(f"./data/sentence_transformer_model/imsdb/y_train_labels.npy")
+        X_train = np.concatenate((X_train, np.load(f"./data/sentence_transformer_model/dailyscript/X_train_embeddings_{model_name}.npy")))
+        y_train = np.concatenate((y_train, np.load(f"./data/sentence_transformer_model/dailyscript/y_train_labels.npy")))
 
-    # load test dataset
-    X_test = np.load(f"./data/sentence_transformer_model/X_test_embeddings_{model_name}.npy")
-    y_test = np.load(f"./data/sentence_transformer_model/y_test_labels.npy")
+        # load test dataset
+        X_test = np.load(f"./data/sentence_transformer_model/imsdb/X_test_embeddings_{model_name}.npy")
+        y_test = np.load(f"./data/sentence_transformer_model/imsdb/y_test_labels.npy")
+        X_test = np.concatenate((X_test, np.load(f"./data/sentence_transformer_model/dailyscript/X_test_embeddings_{model_name}.npy")))
+        y_test = np.concatenate((y_test, np.load(f"./data/sentence_transformer_model/dailyscript/y_test_labels.npy")))
+    else:
+        # load train dataset
+        X_train = np.load(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model_name}.npy")
+        y_train = np.load(f"./data/sentence_transformer_model/{dataset}/y_train_labels.npy")
+
+        # load test dataset
+        X_test = np.load(f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model_name}.npy")
+        y_test = np.load(f"./data/sentence_transformer_model/{dataset}/y_test_labels.npy")
 
     # select only the genres to train on
     y_train = y_train[:, genres_indices]
@@ -81,8 +102,8 @@ def train(model_name: str, genres: list[str]):
     loss, accuracy = model.evaluate(X_test, y_test)
 
     # save the model and config
-    model.save(f"{full_dir_name}model.h5")
-    with open(f"{full_dir_name}config.json", "w") as f:
+    model.save(f"{full_dir_name}/model.h5")
+    with open(f"{full_dir_name}/config.json", "w") as f:
         json.dump(config, f, indent=2)
     
     return loss, accuracy
@@ -94,6 +115,8 @@ if __name__ == "__main__":
                         help="Sentence transformer model to use.")
     parser.add_argument("-g", "--genres", nargs='+', type=str, default=[],
                         help="Genres to train on separated by comma, unknown genres will be removed. If empty, train on all available genres.")
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "all"],
+                        help="Dataset to train on.")
     args = parser.parse_args()
 
-    train(args.model, args.genres)
+    train(args.model, args.genres, args.dataset)

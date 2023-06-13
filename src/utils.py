@@ -3,8 +3,8 @@ import re
 import nltk
 from nltk.stem.snowball import SnowballStemmer
 
-def hash_model_name_and_labels(model_name, labels):
-    input_str = model_name + "".join(sorted(set(labels)))
+def hash_model_name_and_labels(model_name: str, labels: list[str], dataset: str):
+    input_str = model_name + "".join(sorted(set(labels))) + dataset
     return hashlib.md5(input_str.encode()).hexdigest()
 
 def preprocess_for_embedding(script):

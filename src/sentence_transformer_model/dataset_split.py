@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import sys
@@ -6,10 +7,10 @@ import random
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from seed import RANDOM_SEED
 
-def imsdb_dataset_split():
-    os.makedirs("./data/sentence_transformer_model", exist_ok=True)
+def dataset_split(dataset: str):
+    os.makedirs(f"./data/sentence_transformer_model/{dataset}", exist_ok=True)
 
-    with open("./data/datasets/final_imsdb_data.json", "r") as f:
+    with open(f"./data/datasets/final_{dataset}_data.json", "r") as f:
         data = json.load(f)
 
     # get all genres to use as labels
@@ -17,7 +18,7 @@ def imsdb_dataset_split():
     for sample in data:
         genres.update(sample["genre"])
 
-    with open("./data/sentence_transformer_model/genres.json", "w") as f:
+    with open(f"./data/sentence_transformer_model/{dataset}/genres.json", "w") as f:
         json.dump(sorted(list(genres)), f, indent=2)
 
     # split the data to train and test datasets 90/10
@@ -44,7 +45,7 @@ def imsdb_dataset_split():
     for sample in train_dataset_splitted:
         sample["genre_one-hot"] = [ 1 if genre in sample["genre"] else 0 for genre in genres ]
 
-    with open("./data/sentence_transformer_model/train_dataset.json", "w") as f:
+    with open(f"./data/sentence_transformer_model/{dataset}/train_dataset.json", "w") as f:
         json.dump(train_dataset_splitted, f, indent=2)
 
     # do the same for test set
@@ -57,7 +58,7 @@ def imsdb_dataset_split():
     for sample in test_dataset_splitted:
         sample["genre_one-hot"] = [ 1 if genre in sample["genre"] else 0 for genre in genres ]
 
-    with open("./data/sentence_transformer_model/test_dataset.json", "w") as f:
+    with open(f"./data/sentence_transformer_model/{dataset}/test_dataset.json", "w") as f:
         json.dump(test_dataset_splitted, f, indent=2)
 
     # create the test set also with multiple 256 word samples per script
@@ -70,14 +71,13 @@ def imsdb_dataset_split():
         test_dataset_splitted.append(new_samples)
         new_samples["genre_one-hot"] = [ 1 if genre in sample["genre"] else 0 for genre in genres ]
 
-    with open("./data/sentence_transformer_model/test_dataset_whole_scripts.json", "w") as f:
+    with open(f"./data/sentence_transformer_model/{dataset}/test_dataset_whole_scripts.json", "w") as f:
         json.dump(test_dataset_splitted, f, indent=2)
 
-def dailyscript_dataset_split():
-    #TODO
-    pass
-
 if __name__ == "__main__":
-    imsdb_dataset_split()
-    dailyscript_dataset_split()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "all"],
+                        help="Dataset to evaluate on.")
+    args = parser.parse_args()
     
+    dataset_split(args.dataset)

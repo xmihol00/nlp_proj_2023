@@ -4,11 +4,15 @@ import json
 from sentence_transformers import SentenceTransformer
 
 def generate_embeddings(model_name: str, path: str):
+    # remove trailing slash from path
+    if path[-1] == "/":
+        path = path[:-1]
+
     model = SentenceTransformer(model_name)
     print(f"Using model: {model_name}")
 
     # load train dataset
-    with open(f"{path}train_dataset.json", "r") as f:
+    with open(f"{path}/train_dataset.json", "r") as f:
         train_dataset = json.load(f)
 
     # get the shape of the converted train dataset and create a numpy array with the same shape
@@ -21,10 +25,10 @@ def generate_embeddings(model_name: str, path: str):
             print(f"Converted {i} samples to embeddings")
 
     # save the train dataset embeddings
-    np.save(f"{path}X_train_embeddings_{model_name}.npy", train_dataset_embeddings)
+    np.save(f"{path}/X_train_embeddings_{model_name}.npy", train_dataset_embeddings)
 
     # load test dataset
-    with open(f"{path}test_dataset.json", "r") as f:
+    with open(f"{path}/test_dataset.json", "r") as f:
         test_dataset = json.load(f)
 
     # get the shape of the converted test dataset and create a numpy array with the same shape
@@ -35,10 +39,10 @@ def generate_embeddings(model_name: str, path: str):
         test_dataset_embeddings[i] = model.encode(sample["script"])
 
     # save the test dataset embeddings
-    np.save(f"{path}X_test_embeddings_{model_name}.npy", test_dataset_embeddings)
+    np.save(f"{path}/X_test_embeddings_{model_name}.npy", test_dataset_embeddings)
 
     # convert the test dataset of whole scripts to embeddings
-    with open(f"{path}test_dataset_whole_scripts.json", "r") as f:
+    with open(f"{path}/test_dataset_whole_scripts.json", "r") as f:
         test_dataset_whole_scripts = json.load(f)
 
     test_dataset_whole_scripts_embeddings = []
@@ -49,12 +53,13 @@ def generate_embeddings(model_name: str, path: str):
         test_dataset_whole_scripts_embeddings.append(converted_sample)
 
     # save the test dataset of whole scripts as a json file
-    with open(f"{path}test_whole_scripts_{model_name}.json", "w") as f:
+    with open(f"{path}/test_whole_scripts_{model_name}.json", "w") as f:
         json.dump(test_dataset_whole_scripts_embeddings, f, indent=2)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--model", type=str, default="all-mpnet-base-v2", help="SentenceTransformer model to use")
-    parser.add_argument("-p", "--path", type=str, default="./data/sentence_transformer_model/", help="path to data (with trailing slash)")
+    parser.add_argument("-p", "--path", type=str, default="./data/sentence_transformer_model/imsdb", 
+                        help="Path to data.")
     args = parser.parse_args()
     generate_embeddings(args.model, args.path)
