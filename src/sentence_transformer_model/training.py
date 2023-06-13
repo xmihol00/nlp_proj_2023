@@ -6,7 +6,7 @@ import tensorflow as tf
 import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from utils import hash_model_name_and_labels
+from utils import hash_model_attributes
 
 def train(model_name: str, genres: list[str], dataset: str):
     # load genres and select indices of the genres to train on
@@ -24,18 +24,19 @@ def train(model_name: str, genres: list[str], dataset: str):
     config = {}
     if len(genres) == 0:
         genres_indices = list(range(len(all_genres)))
-        dir_name = hash_model_name_and_labels(model_name, all_genres, dataset)
+        dir_name = hash_model_attributes(model_name, all_genres, dataset)
     else:
         picked_genres = sorted(list(set(map(lambda x: x.strip(), genres))))
         picked_genres = [ genre for genre in picked_genres if genre in all_genres ]
         genres_indices = [ all_genres.index(genre) for genre in picked_genres ]
-        dir_name = hash_model_name_and_labels(model_name, picked_genres, dataset)
+        dir_name = hash_model_attributes(model_name, picked_genres, dataset)
         all_genres = picked_genres
 
     config["genres"] = all_genres
     config["genres_indices"] = genres_indices
     config["model"] = model_name
     config["hash"] = dir_name
+    config["dataset"] = dataset
 
     full_dir_name = f"models/sentence_transformer/{dir_name}"
     os.makedirs(full_dir_name, exist_ok=True)

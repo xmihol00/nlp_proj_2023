@@ -11,7 +11,14 @@ def dataset_split(dataset: str):
     train_dataset = data[:train_dataset_size]
     test_dataset = data[train_dataset_size:]
 
+    genres = set()
+    for sample in data:
+        genres.update(sample["genre"])
+
     os.makedirs(f"./data/statistical_model/{dataset}", exist_ok=True)
+
+    with open(f"./data/statistical_model/{dataset}/genres.json", "w") as f:
+        json.dump(sorted(list(genres)), f, indent=2)
 
     with open(f"./data/statistical_model/{dataset}/train_dataset.json", "w") as f:
         json.dump(train_dataset, f, indent=2)

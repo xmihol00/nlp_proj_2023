@@ -1,9 +1,11 @@
 import hashlib
+import json
+import os
 import re
 import nltk
 from nltk.stem.snowball import SnowballStemmer
 
-def hash_model_name_and_labels(model_name: str, labels: list[str], dataset: str):
+def hash_model_attributes(model_name: str, labels: list[str], dataset: str):
     input_str = model_name + "".join(sorted(set(labels))) + dataset
     return hashlib.md5(input_str.encode()).hexdigest()
 
@@ -69,3 +71,109 @@ def preprocess_for_word_counting(script):
     script = re.sub(r"\s.\s", " ", script)
 
     return script.strip()
+
+def available_models(sentence_transformers_dir: str = "models/sentence_transformer", 
+                     statistical_dir: str = "models/statistical") -> list[tuple[str, str, str|None, list[str]]]:
+    """
+    Searches for all available models.
+    :return: list of tuples (model name, dataset name, hash, genres)
+    """
+
+    models = []
+    for model_dir in os.listdir(sentence_transformers_dir):
+        with open(os.path.join(sentence_transformers_dir, model_dir, "config.json")) as f:
+            config = json.load(f)
+        models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
+    
+    for model_dir in os.listdir(statistical_dir):
+        with open(os.path.join(statistical_dir, model_dir, "genres.json")) as f:
+            genres = json.load(f)
+        models.append(("statistical model", model_dir, None, genres))
+    
+    return models
+
+def model_exists(model_name: str, dataset: str, genres: list[str]|None = None, 
+                 sentence_transformers_dir: str = "models/sentence_transformer", 
+                 statistical_dir: str = "models/statistical") -> bool:
+    """
+    :return: True if the model exists, False otherwise
+    """
+
+    if model_name == "statistical model":
+        return os.path.exists(os.path.join(statistical_dir, dataset))
+    else:
+        return os.path.exists(os.path.join(sentence_transformers_dir, hash_model_attributes(model_name, genres, dataset)))
+
+def get_model_metrics(model_name: str, dataset: str, genres: list[str]|None = None, 
+                      sentence_transformers_dir: str = "models/sentence_transformer", 
+                      statistical_dir: str = "models/statistical") -> dict[str, float]:
+    """
+    :return: dictionary of model metrics
+    :throws: FileNotFoundError if evaluation metrics file does not exist
+    """
+
+    if model_name == "statistical model":
+        with open(os.path.join(statistical_dir, dataset, "metrics.json")) as f:
+            return json.load(f)
+    else:
+        with open(os.path.join(sentence_transformers_dir, hash_model_attributes(model_name, genres, dataset), "metrics.json")) as f:
+            return json.load(f)
+
+def get_model_metrics_from_hash(model_hash: str,
+                                sentence_transformers_dir: str = "models/sentence_transformer") -> dict[str, float]:
+    """
+    :return: dictionary of model metrics
+    :throws: FileNotFoundError if evaluation metrics file does not exist
+    """
+
+    with open(os.path.join(sentence_transformers_dir, model_hash, "metrics.json")) as f:
+        return json.load(f)
+
+def get_model_config(model_name: str, dataset: str, genres: list[str]|None = None, 
+                     sentence_transformers_dir: str = "models/sentence_transformer") -> dict:
+    """
+    :return: dictionary of model config
+    """
+    with open(os.path.join(sentence_transformers_dir, hash_model_attributes(model_name, genres, dataset), "config.json")) as f:
+        return json.load(f)
+
+def get_model_config_from_hash(model_hash: str,
+                               sentence_transformers_dir: str = "models/sentence_transformer") -> dict:
+    """
+    :return: dictionary of model config
+    """
+    with open(os.path.join(sentence_transformers_dir, model_hash, "config.json")) as f:
+        return json.load(f)
+
+def models_with_metrics(sentence_transformers_dir: str = "models/sentence_transformer", 
+                        statistical_dir: str = "models/statistical") -> list[tuple[str, str, str|None, list[str]]]:
+    """
+    :return: list of tuples (model name, dataset name, hash, genres) with available metrics
+    """
+
+    models = []
+    for model_dir in os.listdir(sentence_transformers_dir):
+        if os.path.exists(os.path.join(sentence_transformers_dir, model_dir, "metrics.json")):
+            with open(os.path.join(sentence_transformers_dir, model_dir, "config.json")) as f:
+                config = json.load(f)
+            models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
+    
+    for model_dir in os.listdir(statistical_dir):
+        if os.path.exists(os.path.join(statistical_dir, model_dir, "metrics.json")):
+            with open(os.path.join(statistical_dir, model_dir, "genres.json")) as f:
+                genres = json.load(f)
+            models.append(("statistical model", model_dir, None, genres))
+    
+    return models
+
+def has_model_metrics(model_name: str, dataset: str, genres: list[str]|None = None, 
+                      sentence_transformers_dir: str = "models/sentence_transformer", 
+                      statistical_dir: str = "models/statistical") -> bool:
+    """
+    :return: True if the model has metrics, False otherwise
+    """
+
+    if model_name == "statistical model":
+        return os.path.exists(os.path.join(statistical_dir, dataset, "metrics.json"))
+    else:
+        return os.path.exists(os.path.join(sentence_transformers_dir, hash_model_attributes(model_name, genres, dataset), "metrics.json"))

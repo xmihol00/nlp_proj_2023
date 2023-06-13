@@ -6,7 +6,7 @@ import tensorflow as tf
 import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from utils import hash_model_name_and_labels
+from utils import hash_model_attributes
 
 def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
     # load genres
@@ -26,7 +26,7 @@ def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
         genres = list(set(map(lambda x: x.strip(), genres)))
         genres = [ genre for genre in genres if genre in all_genres ]
 
-    full_dir_name = f"./models/sentence_transformer/{hash_model_name_and_labels(model_name, genres, dataset)}"
+    full_dir_name = f"./models/sentence_transformer/{hash_model_attributes(model_name, genres, dataset)}"
 
     # load model and config
     model = tf.keras.models.load_model(f"{full_dir_name}/model.h5")

@@ -4,6 +4,9 @@ import json
 def train(dataset: str, normalize: bool = False):
     with open(f"./data/statistical_model/{dataset}/train_dataset.json", "r") as f:
         data = json.load(f)
+    
+    with open(f"./data/statistical_model/{dataset}/genres.json", "r") as f:
+        genres = json.load(f)
 
     genres_word_counts = { genre: {} for sample in data for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
     genres_occurences = { genre: 0 for sample in data for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
@@ -35,6 +38,9 @@ def train(dataset: str, normalize: bool = False):
 
     with open(f"./models/statistical/{dataset}/genres_word_counts.json", "w") as f:
         json.dump(genres_word_counts, f, indent=2)
+    
+    with open(f"./models/statistical/{dataset}/genres.json", "w") as f:
+        json.dump(genres, f, indent=2)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -8,7 +8,7 @@ import json
 from sentence_transformers import SentenceTransformer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from utils import hash_model_name_and_labels, preprocess_for_embedding
+from utils import hash_model_attributes, preprocess_for_embedding
 
 def predict(model_name: str, genres: list[str], dataset: str, script_file_name: str, number_of_classes: int = 2):
     if dataset == "all":
@@ -31,10 +31,10 @@ def predict(model_name: str, genres: list[str], dataset: str, script_file_name: 
     with open(script_file_name, "r") as f:
         script = f.read()
 
-    path = f"./models/sentence_transformer/{hash_model_name_and_labels(model_name, genres, dataset)}"
+    path = f"./models/sentence_transformer/{hash_model_attributes(model_name, genres, dataset)}"
 
     # load config
-    with open(f"{path}config.json", "r") as f:
+    with open(f"{path}/config.json", "r") as f:
         config = json.load(f)
     genres = config["genres"]
 
