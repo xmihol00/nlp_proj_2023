@@ -1,7 +1,8 @@
+import argparse
 import json
 
-def train(normalize: bool = False):
-    with open("./data/statistical_model/train_dataset.json", "r") as f:
+def train(dataset: str, normalize: bool = False):
+    with open(f"./data/statistical_model/{dataset}/train_dataset.json", "r") as f:
         data = json.load(f)
 
     genres_word_counts = { genre: {} for sample in data for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
@@ -32,8 +33,12 @@ def train(normalize: bool = False):
             for word in genres_word_counts[genre]:
                 genres_word_counts[genre][word] /= sum
 
-    with open("./models/statistical/genres_word_counts.json", "w") as f:
+    with open(f"./models/statistical/{dataset}/genres_word_counts.json", "w") as f:
         json.dump(genres_word_counts, f, indent=2)
 
 if __name__ == "__main__":
-    train()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript"],
+                        help="Dataset to evaluate on.")
+    args = parser.parse_args()
+    train(args.dataset)
