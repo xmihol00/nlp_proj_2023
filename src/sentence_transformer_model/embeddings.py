@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--model", type=str, default="all-mpnet-base-v2", help="SentenceTransformer model to use")
 args = parser.parse_args()
 
-model = SentenceTransformer(args.model, device="cpu")
+model = SentenceTransformer(args.model)
 print(f"Using model: {args.model}")
 
 # load train dataset

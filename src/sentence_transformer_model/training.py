@@ -50,7 +50,6 @@ y_test = np.load(f"./data/sentence_transformer_model/y_test_labels.npy")
 # select only the genres to train on
 y_train = y_train[:, genres_indices]
 y_test = y_test[:, genres_indices]
-# TODO: remove samples with all zeros
 
 # print shapes
 print(f"X_train shape: {X_train.shape}")
