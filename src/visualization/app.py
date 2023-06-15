@@ -116,7 +116,7 @@ app.layout = html.Center(
                             style={"margin-top": "10px"},
                         ),
                         dcc.Dropdown(
-                            id="trainde-model-dropdown",
+                            id="trained-model-dropdown",
                             placeholder="Select a trained model...",
                             style={
                                 "margin-top": "10px",
@@ -260,7 +260,7 @@ def enable_train(dataset, model):
     Output("predict-button", "disabled"),
     [
         Input("script-textarea", "value"),
-        Input("trainde-model-dropdown", "value"),
+        Input("trained-model-dropdown", "value"),
     ],
 )
 def enable_predict(text, model):
@@ -323,7 +323,7 @@ def show_training_curve(model):
 @app.callback(
     [
         Output("train-output", "children"),
-        Output("trainde-model-dropdown", "options"),
+        Output("trained-model-dropdown", "options"),
         Output("evaluating-model-dropdown", "options"),
     ],
     [Input("train-button", "n_clicks")],
@@ -344,7 +344,7 @@ def train_model(n_clicks, dataset, model):
 @app.callback(
     [
         Output("train-output", "children", allow_duplicate=True),
-        Output("trainde-model-dropdown", "options", allow_duplicate=True),
+        Output("trained-model-dropdown", "options", allow_duplicate=True),
         Output("evaluating-model-dropdown", "options", allow_duplicate=True),
     ],
     [Input("retrain-button", "n_clicks")],
@@ -370,7 +370,7 @@ def retrain_model(n_clicks, dataset, model):
     [Input("predict-button", "n_clicks")],
     [
         State("script-textarea", "value"),
-        State("trainde-model-dropdown", "value"),
+        State("trained-model-dropdown", "value"),
     ],
 )
 def predict_genre(n_clicks, script, model):
