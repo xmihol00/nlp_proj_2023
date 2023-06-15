@@ -177,7 +177,7 @@ app.layout = html.Center(
                                     },
                                 ),
                             ],
-                        )
+                        ),
                     ],
                 ),
                 dcc.Tab(
@@ -255,6 +255,7 @@ def enable_train(dataset, model):
         return False, False
     return True, True
 
+
 # Callback to enable and disable the training unless a model and dataset are selected
 @app.callback(
     Output("predict-button", "disabled"),
@@ -277,7 +278,7 @@ def enable_predict(text, model):
         Input("new-script-textarea", "value"),
         Input("new-script-genre-dropdown", "value"),
         Input("new-script-dataset-dropdown", "value"),
-    ]
+    ],
 )
 def enable_submit(title, text, genres, dataset):
     if title and text and genres and dataset:
@@ -328,7 +329,7 @@ def show_training_curve(model):
     ],
     [Input("train-button", "n_clicks")],
     [State("dataset-dropdown", "value"), State("model-dropdown", "value")],
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def train_model(n_clicks, dataset, model):
     if n_clicks is not None:
@@ -338,7 +339,11 @@ def train_model(n_clicks, dataset, model):
         new_model_name = f"New Model {time.time()}"
         new_model_options = {"label": new_model_name, "value": new_model_name}
         trained_model_dropdown_options.append(new_model_options)
-        return html.Div("Model trained successfully!"), trained_model_dropdown_options, trained_model_dropdown_options
+        return (
+            html.Div("Model trained successfully!"),
+            trained_model_dropdown_options,
+            trained_model_dropdown_options,
+        )
 
 
 @app.callback(
@@ -349,7 +354,7 @@ def train_model(n_clicks, dataset, model):
     ],
     [Input("retrain-button", "n_clicks")],
     [State("dataset-dropdown", "value"), State("model-dropdown", "value")],
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def retrain_model(n_clicks, dataset, model):
     if n_clicks is not None:
@@ -359,9 +364,16 @@ def retrain_model(n_clicks, dataset, model):
         model_name = model
         for i, m in enumerate(trained_model_dropdown_options):
             if m["label"] == model_name:
-                trained_model_dropdown_options[i] = {"label": model_name, "value": new_model}
+                trained_model_dropdown_options[i] = {
+                    "label": model_name,
+                    "value": new_model,
+                }
         time.sleep(2)  # Simulate a long running training
-        return html.Div("Model retrained successfully!"), trained_model_dropdown_options, trained_model_dropdown_options
+        return (
+            html.Div("Model retrained successfully!"),
+            trained_model_dropdown_options,
+            trained_model_dropdown_options,
+        )
 
 
 # Callback for predicting the genre
