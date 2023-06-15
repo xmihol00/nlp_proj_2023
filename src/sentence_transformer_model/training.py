@@ -33,26 +33,13 @@ def train(model_name: str, genres: list[str], dataset: str):
     full_dir_name = f"models/sentence_transformer/{dir_name}"
     os.makedirs(full_dir_name, exist_ok=True)
 
-    if dataset == "all":
-        # load train dataset
-        X_train = np.load(f"./data/sentence_transformer_model/imsdb/X_train_embeddings_{model_name}.npy")
-        y_train = np.load(f"./data/sentence_transformer_model/imsdb/y_train_labels.npy")
-        X_train = np.concatenate((X_train, np.load(f"./data/sentence_transformer_model/dailyscript/X_train_embeddings_{model_name}.npy")), axis=0)
-        y_train = np.concatenate((y_train, np.load(f"./data/sentence_transformer_model/dailyscript/y_train_labels.npy")), axis=0)
+    # load train dataset
+    X_train = np.load(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model_name}.npy")
+    y_train = np.load(f"./data/sentence_transformer_model/{dataset}/y_train_labels.npy")
 
-        # load test dataset
-        X_test = np.load(f"./data/sentence_transformer_model/imsdb/X_test_embeddings_{model_name}.npy")
-        y_test = np.load(f"./data/sentence_transformer_model/imsdb/y_test_labels.npy")
-        X_test = np.concatenate((X_test, np.load(f"./data/sentence_transformer_model/dailyscript/X_test_embeddings_{model_name}.npy")), axis=0)
-        y_test = np.concatenate((y_test, np.load(f"./data/sentence_transformer_model/dailyscript/y_test_labels.npy")), axis=0)
-    else:
-        # load train dataset
-        X_train = np.load(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model_name}.npy")
-        y_train = np.load(f"./data/sentence_transformer_model/{dataset}/y_train_labels.npy")
-
-        # load test dataset
-        X_test = np.load(f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model_name}.npy")
-        y_test = np.load(f"./data/sentence_transformer_model/{dataset}/y_test_labels.npy")
+    # load test dataset
+    X_test = np.load(f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model_name}.npy")
+    y_test = np.load(f"./data/sentence_transformer_model/{dataset}/y_test_labels.npy")
 
     # select only the genres to train on
     y_train = y_train[:, genres_indices]
@@ -108,7 +95,7 @@ if __name__ == "__main__":
                         help="Sentence transformer model to use.")
     parser.add_argument("-g", "--genres", nargs='+', type=str, default=[],
                         help="Genres to train on separated by comma, unknown genres will be removed. If empty, train on all available genres.")
-    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "all"],
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "merged"],
                         help="Dataset to train on.")
     args = parser.parse_args()
 

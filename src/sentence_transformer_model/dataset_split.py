@@ -71,8 +71,8 @@ def dataset_split(dataset: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript"],
-                        help="Dataset to evaluate on.")
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "merged"],
+                        help="Dataset to split.")
     args = parser.parse_args()
     
     dataset_split(args.dataset)

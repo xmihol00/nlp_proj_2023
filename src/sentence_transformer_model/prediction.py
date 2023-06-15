@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("-g", "--genres", nargs='+', type=str, default=[],
                         help="Genres to train on separated by comma, unknown genres will be removed. If empty, train on all available genres.")
     parser.add_argument("-n", "--number_of_classes", default=2, type=int, help="Number of classes to predict.")
-    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "all"],
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "merged"],
                         help="Dataset on which the model was trained on.")
     args = parser.parse_args()
 

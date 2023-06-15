@@ -46,7 +46,7 @@ def train(dataset: str, normalize: bool = False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript"],
-                        help="Dataset to evaluate on.")
+    parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript", "merged"],
+                        help="Dataset to train on.")
     args = parser.parse_args()
     train(args.dataset)

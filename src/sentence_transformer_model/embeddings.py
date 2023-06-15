@@ -8,7 +8,7 @@ def generate_embeddings(model_name: str, path: str):
     if path[-1] == "/":
         path = path[:-1]
 
-    model = SentenceTransformer(model_name)
+    model = SentenceTransformer(model_name, device="cpu")
     print(f"Using model: {model_name}")
 
     # load train dataset
