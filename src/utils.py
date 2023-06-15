@@ -85,9 +85,9 @@ def available_models(sentence_transformers_dir: str = "models/sentence_transform
             config = json.load(f)
         models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
     
+    with open("data/statistical_model/genres.json") as f:
+        genres = json.load(f)
     for model_dir in os.listdir(statistical_dir):
-        with open(os.path.join(statistical_dir, model_dir, "genres.json")) as f:
-            genres = json.load(f)
         models.append(("statistical model", model_dir, None, genres))
     
     return models
@@ -158,10 +158,10 @@ def models_with_metrics(sentence_transformers_dir: str = "models/sentence_transf
                 config = json.load(f)
             models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
     
+    with open("data/statistical_model/genres.json") as f:
+        genres = json.load(f)
     for model_dir in os.listdir(statistical_dir):
         if os.path.exists(os.path.join(statistical_dir, model_dir, "metrics.json")):
-            with open(os.path.join(statistical_dir, model_dir, "genres.json")) as f:
-                genres = json.load(f)
             models.append(("statistical model", model_dir, None, genres))
     
     return models
@@ -177,3 +177,12 @@ def has_model_metrics(model_name: str, dataset: str, genres: list[str]|None = No
         return os.path.exists(os.path.join(statistical_dir, dataset, "metrics.json"))
     else:
         return os.path.exists(os.path.join(sentence_transformers_dir, hash_model_attributes(model_name, genres, dataset), "metrics.json"))
+
+if __name__ == "__main__":
+    print("Available models:")
+    for model in available_models():
+        print(model)
+    
+    print("\nModels with metrics:")
+    for model in models_with_metrics():
+        print(model)

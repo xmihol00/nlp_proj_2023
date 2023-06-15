@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 def evaluate(dataset: str):
     test_datasets = []
@@ -15,9 +16,9 @@ def evaluate(dataset: str):
         with open("./models/statistical/dailyscript/genres_word_counts.json", "r") as f:
             all_genres_word_counts.append(json.load(f))
     else:
-        with open("./data/statistical_model/test_dataset.json", "r") as f:
+        with open(f"./data/statistical_model/{dataset}/test_dataset.json", "r") as f:
             test_datasets.append(json.load(f))
-        with open("./models/statistical/genres_word_counts.json", "r") as f:
+        with open(f"./models/statistical/{dataset}/genres_word_counts.json", "r") as f:
             all_genres_word_counts.append(json.load(f))
 
     results = []
@@ -37,7 +38,7 @@ def evaluate(dataset: str):
                     if word in genres_word_counts[genre]:
                         counts[genre] += genres_word_counts[genre][word]
 
-            ground_truth = set(genre for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split("."))
+            ground_truth = set(genre for dirty_genre in sample["genres"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split("."))
             counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
             counts = counts[:len(ground_truth)]
 
@@ -71,10 +72,11 @@ def evaluate(dataset: str):
     average_metrics["F1"] = total_F1 / total_predicted
 
     # save average metrics
-    with open(f"./models/statistical/metrics.json", "w") as f:
+    os.makedirs(f"./models/statistical/{dataset}", exist_ok=True)
+    with open(f"./models/statistical/{dataset}/metrics.json", "w") as f:
         json.dump(average_metrics, f, indent=2)
 
-    with open("./models/statistical/predicted_truth.json", "w") as f:
+    with open(f"./models/statistical/{dataset}/predicted_truth.json", "w") as f:
         json.dump(results, f, indent=2)
     
     return total_predicted, average_metrics, results

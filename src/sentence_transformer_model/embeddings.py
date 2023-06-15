@@ -47,7 +47,7 @@ def generate_embeddings(model_name: str, path: str):
 
     test_dataset_whole_scripts_embeddings = []
     for sample in test_dataset_whole_scripts:
-        converted_sample = { "title": sample["title"], "genre": sample["genre"], "genre_one-hot": sample["genre_one-hot"], "embeddings": [] }
+        converted_sample = { "title": sample["title"], "genres": sample["genres"], "genre_one-hot": sample["genre_one-hot"], "embeddings": [] }
         for script in sample["script"]:
             converted_sample["embeddings"].append(model.encode(script).tolist())
         test_dataset_whole_scripts_embeddings.append(converted_sample)

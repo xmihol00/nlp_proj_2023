@@ -9,17 +9,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import hash_model_attributes
 
 def train(model_name: str, genres: list[str], dataset: str):
-    # load genres and select indices of the genres to train on
-
-    if dataset == "all":
-        with open("./data/sentence_transformer_model/imsdb/genres.json", "r") as f:
-            all_genres = json.load(f)    
-        with open("./data/sentence_transformer_model/dailyscript/genres.json", "r") as f:
-            all_genres += json.load(f)
-        all_genres = sorted(list(set(all_genres)))
-    else:
-        with open(f"./data/sentence_transformer_model/{dataset}/genres.json", "r") as f:
-            all_genres = json.load(f)
+    # load genres
+    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+        all_genres = json.load(f)
 
     config = {}
     if len(genres) == 0:
@@ -45,14 +37,14 @@ def train(model_name: str, genres: list[str], dataset: str):
         # load train dataset
         X_train = np.load(f"./data/sentence_transformer_model/imsdb/X_train_embeddings_{model_name}.npy")
         y_train = np.load(f"./data/sentence_transformer_model/imsdb/y_train_labels.npy")
-        X_train = np.concatenate((X_train, np.load(f"./data/sentence_transformer_model/dailyscript/X_train_embeddings_{model_name}.npy")))
-        y_train = np.concatenate((y_train, np.load(f"./data/sentence_transformer_model/dailyscript/y_train_labels.npy")))
+        X_train = np.concatenate((X_train, np.load(f"./data/sentence_transformer_model/dailyscript/X_train_embeddings_{model_name}.npy")), axis=0)
+        y_train = np.concatenate((y_train, np.load(f"./data/sentence_transformer_model/dailyscript/y_train_labels.npy")), axis=0)
 
         # load test dataset
         X_test = np.load(f"./data/sentence_transformer_model/imsdb/X_test_embeddings_{model_name}.npy")
         y_test = np.load(f"./data/sentence_transformer_model/imsdb/y_test_labels.npy")
-        X_test = np.concatenate((X_test, np.load(f"./data/sentence_transformer_model/dailyscript/X_test_embeddings_{model_name}.npy")))
-        y_test = np.concatenate((y_test, np.load(f"./data/sentence_transformer_model/dailyscript/y_test_labels.npy")))
+        X_test = np.concatenate((X_test, np.load(f"./data/sentence_transformer_model/dailyscript/X_test_embeddings_{model_name}.npy")), axis=0)
+        y_test = np.concatenate((y_test, np.load(f"./data/sentence_transformer_model/dailyscript/y_test_labels.npy")), axis=0)
     else:
         # load train dataset
         X_train = np.load(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model_name}.npy")

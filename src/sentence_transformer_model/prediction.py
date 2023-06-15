@@ -11,15 +11,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import hash_model_attributes, preprocess_for_embedding
 
 def predict(model_name: str, genres: list[str], dataset: str, script_file_name: str, number_of_classes: int = 2):
-    if dataset == "all":
-        with open("./data/sentence_transformer_model/imsdb/genres.json", "r") as f:
-            all_genres = json.load(f)    
-        with open("./data/sentence_transformer_model/dailyscript/genres.json", "r") as f:
-            all_genres += json.load(f)
-        all_genres = sorted(list(set(all_genres)))
-    else:
-        with open(f"./data/sentence_transformer_model/{dataset}/genres.json", "r") as f:
-            all_genres = json.load(f)
+    # load genres
+    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+        all_genres = json.load(f)
 
     if len(genres) == 0:
         genres = all_genres

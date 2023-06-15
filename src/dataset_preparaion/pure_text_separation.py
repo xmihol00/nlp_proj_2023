@@ -1,12 +1,19 @@
-import re
+import argparse
 import json
 
-with open("./data/datasets/punctuation_cleaned_imsdb_data.json", "r") as f:
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript"],
+                    help="Dataset to process.")
+args = parser.parse_args()
+
+print("Separating pure text...")
+
+with open(f"./data/datasets/{args.dataset}/punctuation_cleaned.json", "r") as f:
     data = json.load(f)
 
 text = ""
 for sample in data:
     text += sample["script"]
 
-with open("./data/datasets/pure_text_imsdb_data.txt", "w") as f:
+with open(f"./data/datasets/{args.dataset}/pure_text.txt", "w") as f:
     f.write(text)

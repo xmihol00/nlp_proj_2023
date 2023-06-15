@@ -3,7 +3,7 @@ import json
 import os
 
 def dataset_split(dataset: str):
-    with open(f"./data/datasets/final_stemmed_no_stopwords_{dataset}_data.json", "r") as f:
+    with open(f"./data/datasets/{dataset}/final_stemmed_no_stopwords.json", "r") as f:
         data = json.load(f)
 
     number_of_samples = len(data)
@@ -13,12 +13,12 @@ def dataset_split(dataset: str):
 
     genres = set()
     for sample in data:
-        genres.update(sample["genre"])
+        genres.update(sample["genres"])
 
     os.makedirs(f"./data/statistical_model/{dataset}", exist_ok=True)
 
-    with open(f"./data/statistical_model/{dataset}/genres.json", "w") as f:
-        json.dump(sorted(list(genres)), f, indent=2)
+    with open(f"./data/statistical_model/genres.json", "r") as f:
+        genres = set(json.load(f))
 
     with open(f"./data/statistical_model/{dataset}/train_dataset.json", "w") as f:
         json.dump(train_dataset, f, indent=2)

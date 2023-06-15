@@ -1,7 +1,15 @@
+import argparse
 import re
 import json
 
-with open("./data/datasets/punctuation_cleaned_imsdb_data.json", "r") as f:
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--dataset", type=str, default="imsdb", choices=["imsdb", "dailyscript"],
+                    help="Dataset to process.")
+args = parser.parse_args()
+
+print("Cleaning special cases...")
+
+with open(f"./data/datasets/{args.dataset}/punctuation_cleaned.json", "r") as f:
     data = json.load(f)
 
 for sample in data:
@@ -13,5 +21,5 @@ for sample in data:
     sample["script"] = re.sub(r"\s+", " ", sample["script"])
     sample["script"] = re.sub(r" I ", " i ", sample["script"])
 
-with open("./data/datasets/special_cases_cleaned_imsdb_data.json", "w") as f:
+with open(f"./data/datasets/{args.dataset}/special_cases_cleaned.json", "w") as f:
     json.dump(data, f, indent=2)

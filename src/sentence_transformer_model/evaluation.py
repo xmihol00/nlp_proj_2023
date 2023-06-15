@@ -10,15 +10,8 @@ from utils import hash_model_attributes
 
 def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
     # load genres
-    if dataset == "all":
-        with open("./data/sentence_transformer_model/imsdb/genres.json", "r") as f:
-            all_genres = json.load(f)    
-        with open("./data/sentence_transformer_model/dailyscript/genres.json", "r") as f:
-            all_genres += json.load(f)
-        all_genres = sorted(list(set(all_genres)))
-    else:
-        with open(f"./data/sentence_transformer_model/{dataset}/genres.json", "r") as f:
-            all_genres = json.load(f)
+    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+        all_genres = json.load(f)
 
     if len(genres) == 0:
         genres = all_genres
@@ -37,9 +30,9 @@ def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
     test_datasets = []
     # load test dataset with whole scripts
     if dataset == "all":
-        with open("./data/sentence_transformer_model/imsdb/test_whole_scripts.json", "r") as f:
+        with open(f"./data/sentence_transformer_model/imsdb/test_whole_scripts_{model_name}.json", "r") as f:
             test_datasets.append(json.load(f))
-        with open("./data/sentence_transformer_model/dailyscript/test_whole_scripts.json", "r") as f:
+        with open(f"./data/sentence_transformer_model/dailyscript/test_whole_scripts_{model_name}.json", "r") as f:
             test_datasets.append(json.load(f))
     else:
         with open(f"./data/sentence_transformer_model/{dataset}/test_whole_scripts_{model_name}.json", "r") as f:
@@ -67,7 +60,7 @@ def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
             predicted_truth = {}
             predicted_truth["title"] = script["title"]
             predicted_truth["predicted_genres"] = [ genres[idx] for idx in y_pred ]
-            predicted_truth["truth_genres"] = [ genre for genre in script["genre"] if genre in genres ]
+            predicted_truth["truth_genres"] = [ genre for genre in script["genres"] if genre in genres ]
 
             # calculate metrics
             if len(set(predicted_truth["predicted_genres"]).union(set(predicted_truth["truth_genres"]))) == 0:
@@ -103,6 +96,7 @@ def evaluate(model_name: str, genres: list[str], dataset: str = "imsdb"):
     average_metrics["F1"] = total_F1 / total_predicted
 
     # save average metrics
+    os.makedirs(full_dir_name, exist_ok=True)
     with open(f"{full_dir_name}/metrics.json", "w") as f:
         json.dump(average_metrics, f, indent=2)
 

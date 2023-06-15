@@ -1,18 +1,19 @@
 import argparse
 import json
+import os
 
 def train(dataset: str, normalize: bool = False):
     with open(f"./data/statistical_model/{dataset}/train_dataset.json", "r") as f:
         data = json.load(f)
     
-    with open(f"./data/statistical_model/{dataset}/genres.json", "r") as f:
+    with open(f"./data/statistical_model/genres.json", "r") as f:
         genres = json.load(f)
 
-    genres_word_counts = { genre: {} for sample in data for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
-    genres_occurences = { genre: 0 for sample in data for dirty_genre in sample["genre"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
+    genres_word_counts = { genre: {} for sample in data for dirty_genre in sample["genres"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
+    genres_occurences = { genre: 0 for sample in data for dirty_genre in sample["genres"] if dirty_genre.strip() != "" for genre in dirty_genre.strip().split(".") }
 
     for sample in data:
-        for dirty_genre in sample["genre"]:
+        for dirty_genre in sample["genres"]:
             if dirty_genre.strip() != "":
                 for genre in dirty_genre.strip().split("."):
                     genres_occurences[genre] += 1
@@ -36,6 +37,7 @@ def train(dataset: str, normalize: bool = False):
             for word in genres_word_counts[genre]:
                 genres_word_counts[genre][word] /= sum
 
+    os.makedirs(f"./models/statistical/{dataset}", exist_ok=True)
     with open(f"./models/statistical/{dataset}/genres_word_counts.json", "w") as f:
         json.dump(genres_word_counts, f, indent=2)
     
