@@ -17,7 +17,8 @@ class ScriptError(Exception):
 
 class DailyscriptScraper:
     domain = "https://www.dailyscript.com/"
-    out_file = "./data/scraped_dailyscript_data.json"
+    out_file = "./data/scraped_data/scraped_dailyscript_data.json"
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
     def _get_soup(self, search_query):
         resp = urllib.request.urlopen(search_query)

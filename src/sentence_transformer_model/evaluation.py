@@ -82,10 +82,12 @@ def evaluate(model_name: str, genres: list[str], model_dataset: str = "imsdb", e
         predicted_truth_set.append(predicted_truth)
 
     average_metrics = {}
-    average_metrics["IoU"] = total_IoU / total_predicted
-    average_metrics["recall"] = total_recall / total_predicted
-    average_metrics["precision"] = total_precision / total_predicted
-    average_metrics["F1"] = total_F1 / total_predicted
+    average_metrics["Average IoU"] = total_IoU / total_predicted
+    average_metrics["Average recall"] = total_recall / total_predicted
+    average_metrics["Average precision"] = total_precision / total_predicted
+    average_metrics["Average F1"] = total_F1 / total_predicted
+    average_metrics["samples"] = total_predicted
+    average_metrics["dataset"] = evaluation_dataset
 
     # save average metrics
     os.makedirs(path, exist_ok=True)
@@ -96,7 +98,7 @@ def evaluate(model_name: str, genres: list[str], model_dataset: str = "imsdb", e
     with open(f"{path}/predicted_truth.json", "w") as f:
         json.dump(predicted_truth_set, f, indent=2)
     
-    return total_predicted, average_metrics, predicted_truth_set
+    return total_predicted, average_metrics
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -111,9 +113,9 @@ if __name__ == "__main__":
                         help="Dataset to evaluate on.")
     args = parser.parse_args()
 
-    total_predicted, average_metrics, _ = evaluate(args.model, args.genres, args.model_dataset, args.evaluation_dataset)
+    total_predicted, average_metrics = evaluate(args.model, args.genres, args.model_dataset, args.evaluation_dataset)
     print(f"Predicted samples: {total_predicted}")
-    print(f"Average IoU: {average_metrics['IoU']}")
-    print(f"Average recall: {average_metrics['recall']}")
-    print(f"Average precision: {average_metrics['precision']}")
-    print(f"Average F1: {average_metrics['F1']}")    
+    print(f"Average IoU: {average_metrics['Average IoU']}")
+    print(f"Average recall: {average_metrics['Average recall']}")
+    print(f"Average precision: {average_metrics['Average precision']}")
+    print(f"Average F1: {average_metrics['Average F1']}")    

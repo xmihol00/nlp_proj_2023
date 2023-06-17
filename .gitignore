@@ -136,3 +136,5 @@ models/
 script.txt
 *.toml
 data.zip
+data_stash/
+models_stash/

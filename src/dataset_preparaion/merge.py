@@ -1,7 +1,7 @@
 import json
 import os
 
-def merge_datasets(data_imsdb, data_dailyscript):
+def merge(data_imsdb, data_dailyscript):
     for dailyscript_sample in data_dailyscript:
         # check if sample is already in imsdb
         already_in_imsdb = False
@@ -17,23 +17,27 @@ def merge_datasets(data_imsdb, data_dailyscript):
     
     return data_imsdb
 
-os.makedirs("./data/datasets/merged", exist_ok=True)
-print("Merging datasets...")
+def merge_datasets():
+    os.makedirs("./data/datasets/merged", exist_ok=True)
+    with open("./data/datasets/imsdb/final_stemmed_no_stopwords.json", "r") as f:
+        data_imsdb = json.load(f)
+    with open("./data/datasets/dailyscript/final_stemmed_no_stopwords.json", "r") as f:
+        data_dailyscript = json.load(f)
 
-with open("./data/datasets/imsdb/final_stemmed_no_stopwords.json", "r") as f:
-    data_imsdb = json.load(f)
-with open("./data/datasets/dailyscript/final_stemmed_no_stopwords.json", "r") as f:
-    data_dailyscript = json.load(f)
+    merged = merge(data_imsdb, data_dailyscript)
+    with open("./data/datasets/merged/final_stemmed_no_stopwords.json", "w") as f:
+        json.dump(merged, f, indent=2)
 
-merged = merge_datasets(data_imsdb, data_dailyscript)
-with open("./data/datasets/merged/final_stemmed_no_stopwords.json", "w") as f:
-    json.dump(merged, f, indent=2)
+    with open("./data/datasets/imsdb/final.json", "r") as f:
+        data_imsdb = json.load(f)
+    with open("./data/datasets/dailyscript/final.json", "r") as f:
+        data_dailyscript = json.load(f)
 
-with open("./data/datasets/imsdb/final.json", "r") as f:
-    data_imsdb = json.load(f)
-with open("./data/datasets/dailyscript/final.json", "r") as f:
-    data_dailyscript = json.load(f)
+    merged = merge(data_imsdb, data_dailyscript)
+    with open("./data/datasets/merged/final.json", "w") as f:
+        json.dump(merged, f, indent=2)
 
-merged = merge_datasets(data_imsdb, data_dailyscript)
-with open("./data/datasets/merged/final.json", "w") as f:
-    json.dump(merged, f, indent=2)
+if __name__ == "__main__":
+    print("Merging datasets...")
+    merge_datasets()
+

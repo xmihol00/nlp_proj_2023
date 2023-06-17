@@ -79,10 +79,11 @@ def available_models() -> list[tuple[str, str, str|None, list[str]]]:
     """
 
     models = []
-    for model_dir in os.listdir("./models"):
-        with open(os.path.join("./models", model_dir, "config.json")) as f:
-            config = json.load(f)
-        models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
+    if os.path.exists("./models"):
+        for model_dir in os.listdir("./models"):
+            with open(os.path.join("./models", model_dir, "config.json")) as f:
+                config = json.load(f)
+            models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
         
     return models
 
@@ -124,7 +125,7 @@ def get_model_config_from_hash(model_hash: str) -> dict:
     with open(os.path.join("./models", model_hash, "config.json")) as f:
         return json.load(f)
 
-def models_with_metrics() -> list[tuple[str, str, str|None, list[str]]]:
+def models_with_metrics() -> list[tuple[str, str, str, list[str], dict]]:
     """
     :return: list of tuples (model name, dataset name, hash, genres) with available metrics
     """
@@ -134,7 +135,9 @@ def models_with_metrics() -> list[tuple[str, str, str|None, list[str]]]:
         if os.path.exists(os.path.join("./models", model_dir, "metrics.json")):
             with open(os.path.join("./models", model_dir, "config.json")) as f:
                 config = json.load(f)
-            models.append((config["model"], config["dataset"], config["hash"], config["genres"]))
+            with open(os.path.join("./models", model_dir, "metrics.json")) as f:
+                metrics = json.load(f)
+            models.append((config["model"], config["dataset"], config["hash"], config["genres"], metrics))
         
     return models
 
@@ -146,8 +149,11 @@ def has_model_metrics(model_name: str, dataset: str, genres: list[str]) -> bool:
     return os.path.exists(os.path.join("./models", hash_model_attributes(model_name, genres, dataset), "metrics.json"))
 
 def available_genres():
-    with open("data/datasets/genres.json") as f:
-        return json.load(f)
+    if os.path.exists("data/datasets/genres.json"):
+        with open("data/datasets/genres.json") as f:
+            return json.load(f)
+    
+    return []
 
 if __name__ == "__main__":
     print("Available models:")

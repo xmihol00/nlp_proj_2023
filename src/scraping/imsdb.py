@@ -1,3 +1,4 @@
+import json
 import re
 import os
 import urllib.request
@@ -64,14 +65,15 @@ class ImsdbSpider(CrawlSpider):
 
 
 class ImsdbScraper():
-    out_file = "./data/scraped_imsdb_data.json"
+    out_file = "./data/scraped_data/scraped_imsdb_data.json"
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
     def run(self, overwrite=False):
         if overwrite or not os.path.exists(self.out_file):
             process = CrawlerProcess(
                 settings={
                     "FEEDS": {
-                        "./data/scraped_imsdb_data.json": {"format": "json"},
+                        "./data/scraped_data/scraped_imsdb_data.json": {"format": "json"},
                     },
                 }
             )
@@ -81,3 +83,9 @@ class ImsdbScraper():
 
 if __name__ == "__main__":
     ImsdbScraper().run(overwrite=True)
+    with open("./data/scraped_data/scraped_imsdb_data.json", "r") as f:
+        data = f.read()
+        data = re.sub(r"^\]\[$", ",", data)
+    
+    with open("./data/scraped_data/scraped_imsdb_data.json", "w") as f:
+        json.dump(data, f)
