@@ -17,7 +17,7 @@ def dataset_split(dataset: str):
 
     os.makedirs(f"./data/statistical_model/{dataset}", exist_ok=True)
 
-    with open(f"./data/statistical_model/genres.json", "r") as f:
+    with open(f"./data/datasets/genres.json", "r") as f:
         genres = set(json.load(f))
 
     with open(f"./data/statistical_model/{dataset}/train_dataset.json", "w") as f:

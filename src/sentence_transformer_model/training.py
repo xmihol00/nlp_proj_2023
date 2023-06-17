@@ -10,7 +10,7 @@ from utils import hash_model_attributes
 
 def train(model_name: str, genres: list[str], dataset: str):
     # load genres
-    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+    with open(f"./data/datasets/genres.json", "r") as f:
         all_genres = json.load(f)
 
     config = {}
@@ -30,7 +30,7 @@ def train(model_name: str, genres: list[str], dataset: str):
     config["hash"] = dir_name
     config["dataset"] = dataset
 
-    full_dir_name = f"models/sentence_transformer/{dir_name}"
+    full_dir_name = f"./models/{dir_name}"
     os.makedirs(full_dir_name, exist_ok=True)
 
     # load train dataset
@@ -78,15 +78,10 @@ def train(model_name: str, genres: list[str], dataset: str):
     model.set_weights(initial_weights)
     model.fit(X_train, y_train, epochs=best_epoch, batch_size=128)
 
-    # evaluate on the test dataset
-    loss, accuracy = model.evaluate(X_test, y_test)
-
     # save the model and config
     model.save(f"{full_dir_name}/model.h5")
     with open(f"{full_dir_name}/config.json", "w") as f:
         json.dump(config, f, indent=2)
-    
-    return loss, accuracy
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

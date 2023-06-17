@@ -9,10 +9,10 @@ from sentence_transformers import SentenceTransformer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import hash_model_attributes, preprocess_for_embedding
-
-def predict(model_name: str, genres: list[str], dataset: str, script_file_name: str, number_of_classes: int = 2):
+    
+def predict_string(model_name: str, genres: list[str], dataset: str, script: str, number_of_classes: int = 2):
     # load genres
-    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+    with open(f"./data/datasets/genres.json", "r") as f:
         all_genres = json.load(f)
 
     if len(genres) == 0:
@@ -21,11 +21,7 @@ def predict(model_name: str, genres: list[str], dataset: str, script_file_name: 
         genres = sorted(list(set(map(lambda x: x.strip(), genres))))
         genres = [ genre for genre in genres if genre in all_genres ]
 
-    # load script
-    with open(script_file_name, "r") as f:
-        script = f.read()
-
-    path = f"./models/sentence_transformer/{hash_model_attributes(model_name, genres, dataset)}"
+    path = f"./models/{hash_model_attributes(model_name, genres, dataset)}"
 
     # load config
     with open(f"{path}/config.json", "r") as f:
@@ -59,6 +55,14 @@ def predict(model_name: str, genres: list[str], dataset: str, script_file_name: 
 
     return genres
 
+
+def predict_file(model_name: str, genres: list[str], dataset: str, script_file_name: str, number_of_classes: int = 2):
+    # load script
+    with open(script_file_name, "r") as f:
+        script = f.read()
+    
+    return predict_string(model_name, genres, dataset, script, number_of_classes)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("file_name", type=str, help="Name of the file with a movies script to be classified.")
@@ -72,5 +76,5 @@ if __name__ == "__main__":
                         help="Dataset on which the model was trained on.")
     args = parser.parse_args()
 
-    genres = predict(args.model, args.genres, args.dataset, args.file_name, args.number_of_classes)
+    genres = predict_file(args.model, args.genres, args.dataset, args.file_name, args.number_of_classes)
     print(f"Predicted genres: {genres}")

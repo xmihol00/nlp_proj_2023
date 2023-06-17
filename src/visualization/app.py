@@ -1,9 +1,17 @@
+import os
+import sys
 import time
-
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+import utils
+import sentence_transformer_model.training as transformer_training
+import sentence_transformer_model.prediction as transformer_prediction
+import statistical_model.training as statistical_training
+import statistical_model.prediction as statistical_prediction
 
 app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
 
@@ -12,34 +20,27 @@ app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
 # Sample datasets and models
 # TODO: change value to real models/datasets
 model_dropdown_options = [
-    {"label": "Model 1", "value": "Model 1"},
-    {"label": "Model 2", "value": "Model 2"},
-    {"label": "Model 3", "value": "Model 3"},
+    {"label": "all-mpnet-base-v2", "value": "all-mpnet-base-v2"},
+    {"label": "all-MiniLM-L12-v2", "value": "all-MiniLM-L12-v2"},
+    {"label": "all-distilroberta-v1", "value": "all-distilroberta-v1"},
+    {"label": "multi-qa-mpnet-base-dot-v1", "value": "multi-qa-mpnet-base-dot-v1"},
+    {"label": "average_word_embeddings_glove.6B.300d", "value": "average_word_embeddings_glove.6B.300d"},
+    {"label": "statistical", "value": "statistical"},
 ]
-trained_model_dropdown_options = [
-    {"label": "Trained Model 1", "value": "Trained Model {1"},
-    {"label": "Trained Model 2", "value": "Trained Model 2"},
-    {"label": "Trained Model 3", "value": "Trained Model 3"},
-]
+trained_model_dropdown_options = [ ]
 dataset_dropdown_options = [
-    {"label": "Dataset 1", "value": "Dataset 1"},
-    {"label": "Dataset 2", "value": "Dataset 2"},
-    {"label": "Dataset 3", "value": "Dataset 3"},
+    "imsdb",
+    "dailyscript",
+    "merged",
 ]
 
 # TODO: change value to real genres
 available_genres = [
-    "Action",
-    "Adventure",
-    "Comedy",
-    "Drama",
-    "Horror",
-    "Romance",
-    "Thriller",
+    {"label": "All", "value": "All"},
 ]
 
 # Define app layout
-app.layout = html.Center(
+app.layout = html.Div(
     [
         dcc.Tabs(
             id="tabs",
@@ -49,105 +50,157 @@ app.layout = html.Center(
                     label="Train",
                     value="tab-train",
                     children=[
-                        html.H3(
-                            "Train Model",
-                            style={"margin-top": "10px"},
-                        ),
-                        dcc.Dropdown(
-                            id="dataset-dropdown",
-                            placeholder="Select a dataset...",
-                            style={
-                                "margin-top": "10px",
-                                "width": "50%",
-                                "height": "50px",
-                            },
-                            options=dataset_dropdown_options,
-                        ),
-                        dcc.Dropdown(
-                            id="model-dropdown",
-                            placeholder="Select a model...",
-                            options=model_dropdown_options,
-                            style={
-                                "margin-top": "10px",
-                                "width": "50%",
-                                "height": "50px",
-                            },
-                        ),
-                        html.Div(
-                            children=[
-                                html.Button(
-                                    "Train New",
-                                    id="train-button",
-                                    style={
-                                        "margin-top": "10px",
-                                        "width": "50%",
-                                        "height": "50px",
-                                    },
-                                ),
-                                html.Button(
-                                    "Retrain",
-                                    id="retrain-button",
-                                    style={
-                                        "margin-top": "10px",
-                                        "width": "50%",
-                                        "height": "50px",
-                                    },
-                                ),
-                            ],
-                            style={
-                                "margin-top": "10px",
-                                "width": "30%",
-                                "height": "50px",
-                            },
-                        ),
-                        html.Br(),
-                        dcc.Loading(
-                            id="training-loading",
-                            children=[html.Div(id="train-output")],
-                        ),
+                        html.Div(children=[
+                            html.H3(
+                                "Train Model",
+                                style={"margin-top": "10px"},
+                            ),
+                            dcc.Dropdown(
+                                id="dataset-dropdown",
+                                placeholder="Select a dataset...",
+                                style={
+                                    "margin-top": "10px",
+                                },
+                                options=dataset_dropdown_options,
+                            ),
+                            dcc.Dropdown(
+                                id="model-dropdown",
+                                placeholder="Select a model...",
+                                options=model_dropdown_options,
+                                style={
+                                    "margin-top": "10px",
+                                },
+                            ),
+                            dcc.Dropdown(
+                                id="train-genre-dropdown",
+                                placeholder="Select the genres...",
+                                options=available_genres,
+                                multi=True,
+                                style={
+                                    "margin-top": "10px",
+                                },
+                            ),
+                            html.Div(
+                                children=[
+                                    html.Button(
+                                        "Train",
+                                        id="train-button",
+                                        style={
+                                            "margin-top": "10px",
+                                            "height": "50px",
+                                            "width": "100%",
+                                        },
+                                    ),
+                                ],
+                                style={
+                                    "width": "25%",
+                                    "height": "50px",
+                                    "margin": "auto",
+                                },
+                            ),
+                            html.H3(
+                                "Retrain Model",
+                                style={"margin-top": "10px"},
+                            ),
+                            dcc.Dropdown(
+                                id="retrain-model-dropdown",
+                                placeholder="Select a trained model...",
+                                style={
+                                    "margin-top": "10px",
+                                },
+                                options=trained_model_dropdown_options,
+                                optionHeight=80,
+                                maxHeight=500
+                            ),
+                            html.Div(
+                                children=[
+                                    html.Button(
+                                        "Retrain",
+                                        id="retrain-button",
+                                        style={
+                                            "margin-top": "10px",
+                                            "height": "50px",
+                                            "width": "100%",
+                                        },
+                                    ),
+                                ],
+                                style={
+                                    "width": "25%",
+                                    "height": "50px",
+                                    "margin": "auto",
+                                },
+                            ),
+                            html.Br(),
+                            dcc.Loading(
+                                id="training-loading",
+                                children=[html.Div(id="train-output")],
+                            )
+                        ],
+                        style={"width": "50%", "margin": "auto"}),
                     ],
                 ),
                 dcc.Tab(
                     label="Predict",
                     value="tab-predict",
                     children=[
-                        html.H3(
-                            "Predict Genre",
-                            style={"margin-top": "10px"},
-                        ),
-                        dcc.Dropdown(
-                            id="trained-model-dropdown",
-                            placeholder="Select a trained model...",
-                            style={
-                                "margin-top": "10px",
-                                "width": "50%",
-                                "height": "50px",
-                            },
-                            options=trained_model_dropdown_options,
-                        ),
-                        dcc.Textarea(
-                            id="script-textarea",
-                            placeholder="Enter a script...",
-                            style={
-                                "margin-top": "10px",
-                                "width": "30%",
-                                "height": "200px",
-                            },
-                        ),
-                        html.Br(),
-                        html.Button(
-                            "Predict",
-                            id="predict-button",
-                            style={
-                                "margin-top": "10px",
-                                "width": "30%",
-                                "height": "50px",
-                            },
-                        ),
-                        dcc.Loading(
-                            id="predict-loading",
-                            children=[html.Div(id="predict-output")],
-                        ),
+                        html.Div(children=[
+                            html.H3(
+                                "Predict Genre",
+                                style={"margin-top": "10px"},
+                            ),
+                            dcc.Dropdown(
+                                id="trained-model-dropdown",
+                                placeholder="Select a trained model...",
+                                style={
+                                    "margin-top": "10px",
+                                },
+                                options=trained_model_dropdown_options,
+                                optionHeight=80,
+                                maxHeight=500
+                            ),
+                            dcc.Input(
+                                id="num-genres-input",
+                                type="number",
+                                placeholder="Enter a number of genres to predict...",
+                                style={
+                                    "margin-top": "10px",
+                                    "width": "100%",
+                                },
+                            ),
+                            dcc.Textarea(
+                                id="script-textarea",
+                                placeholder="Enter a script...",
+                                style={
+                                    "margin-top": "10px",
+                                    "height": "200px",
+                                    "width": "100%",
+                                },
+                            ),
+                            html.Br(),
+                            html.Div(
+                                children=[
+                                    html.Button(
+                                        "Predict",
+                                        id="predict-button",
+                                        style={
+                                            "margin-top": "10px",
+                                            "height": "50px",
+                                            "width": "100%",
+                                        },
+                                    ),
+                                ],
+                                style={
+                                    "width": "25%",
+                                    "height": "50px",
+                                    "margin": "auto",
+                                },
+                            ),
+                            dcc.Loading(
+                                id="predict-loading",
+                                children=[html.Div(id="predict-output", style={"margin-top": "10px"})],
+                            ),
+                        ],
+                        style={"width": "50%", "margin": "auto"}),
                     ],
                 ),
                 dcc.Tab(
@@ -208,10 +261,7 @@ app.layout = html.Center(
                         dcc.Dropdown(
                             id="new-script-genre-dropdown",
                             placeholder="Select the genres...",
-                            options=[
-                                {"label": genre, "value": genre}
-                                for genre in available_genres
-                            ],
+                            options=available_genres,
                             multi=True,
                             style={
                                 "margin-top": "10px",
@@ -241,28 +291,34 @@ app.layout = html.Center(
                 ),
             ],
         )
-    ]
+    ],
 )
 
 
 # Callback to enable and disable the training unless a model and dataset are selected
 @app.callback(
-    [Output("train-button", "disabled"), Output("retrain-button", "disabled")],
-    [Input("dataset-dropdown", "value"), Input("model-dropdown", "value")],
+    Output("train-button", "disabled"),
+    [Input("dataset-dropdown", "value"), Input("model-dropdown", "value"), Input("train-genre-dropdown", "value")],
 )
-def enable_train(dataset, model):
-    if dataset and model:
-        return False, False
-    return True, True
+def enable_train(dataset, model, genre):
+    if dataset and model and genre:
+        return False
+    return True
 
+# Callback to enable and disable the retraining unless a model is selected
+@app.callback(
+    Output("retrain-button", "disabled"),
+    [Input("retrain-model-dropdown", "value")],
+)
+def enable_train(model):
+    if model:
+        return False
+    return True
 
 # Callback to enable and disable the training unless a model and dataset are selected
 @app.callback(
     Output("predict-button", "disabled"),
-    [
-        Input("script-textarea", "value"),
-        Input("trained-model-dropdown", "value"),
-    ],
+    [Input("script-textarea", "value"),Input("trained-model-dropdown", "value")],
 )
 def enable_predict(text, model):
     if text and model:
@@ -285,7 +341,6 @@ def enable_submit(title, text, genres, dataset):
         # TODO: Check if the title is unique
         return False
     return True
-
 
 # Callback to submit a new script
 @app.callback(
@@ -326,55 +381,47 @@ def show_training_curve(model):
         Output("train-output", "children"),
         Output("trained-model-dropdown", "options"),
         Output("evaluating-model-dropdown", "options"),
+        Output("retrain-model-dropdown", "options"),
     ],
     [Input("train-button", "n_clicks")],
-    [State("dataset-dropdown", "value"), State("model-dropdown", "value")],
+    [State("dataset-dropdown", "value"), State("model-dropdown", "value"), State("train-genre-dropdown", "value")],
     prevent_initial_call=True,
 )
-def train_model(n_clicks, dataset, model):
+def train_model(n_clicks, dataset, model, genres):
     if n_clicks is not None:
-        time.sleep(5)  # Simulate a long running prediction
-        # TODO: Perform the model training based on the selected dataset and model
-        # TODO: train new model here
-        new_model_name = f"New Model {time.time()}"
-        new_model_options = {"label": new_model_name, "value": new_model_name}
-        trained_model_dropdown_options.append(new_model_options)
+        if "All" in genres:
+            genres = []
+
+        if model == "statistical":
+            statistical_training.train(genres, dataset)
+        else:
+            transformer_training.train(model, genres, dataset)
+        
+        update_trained_models()
         return (
             html.Div("Model trained successfully!"),
+            trained_model_dropdown_options,
             trained_model_dropdown_options,
             trained_model_dropdown_options,
         )
 
 
 @app.callback(
-    [
-        Output("train-output", "children", allow_duplicate=True),
-        Output("trained-model-dropdown", "options", allow_duplicate=True),
-        Output("evaluating-model-dropdown", "options", allow_duplicate=True),
-    ],
+    Output("train-output", "children", allow_duplicate=True),
     [Input("retrain-button", "n_clicks")],
-    [State("dataset-dropdown", "value"), State("model-dropdown", "value")],
+    [State("retrain-model-dropdown", "value")],
     prevent_initial_call=True,
 )
-def retrain_model(n_clicks, dataset, model):
+def retrain_model(n_clicks, model_hash):
     if n_clicks is not None:
-        # TODO: Perform the model retraining based on the selected dataset and model
-        # Replace the model name with the new model
-        new_model = model
-        model_name = model
-        for i, m in enumerate(trained_model_dropdown_options):
-            if m["label"] == model_name:
-                trained_model_dropdown_options[i] = {
-                    "label": model_name,
-                    "value": new_model,
-                }
-        time.sleep(2)  # Simulate a long running training
-        return (
-            html.Div("Model retrained successfully!"),
-            trained_model_dropdown_options,
-            trained_model_dropdown_options,
-        )
-
+        model_config = utils.get_model_config_from_hash(model_hash)
+        if model_config["model"] == "statistical":
+            statistical_training.train(model_config["dataset"], model_config["genres"])
+        else:
+            transformer_training.train(model_config["model"], model_config["genres"], model_config["dataset"])
+        
+        update_trained_models()
+        return html.Div("Model retrained successfully!")
 
 # Callback for predicting the genre
 @app.callback(
@@ -383,21 +430,33 @@ def retrain_model(n_clicks, dataset, model):
     [
         State("script-textarea", "value"),
         State("trained-model-dropdown", "value"),
+        State("num-genres-input", "value")
     ],
 )
-def predict_genre(n_clicks, script, model):
+def predict_genre(n_clicks, script, model_hash, num_genres):
     if n_clicks is not None and script:
-        # Perform the prediction based on the entered script
-        # Update the predict-output div with the predicted genres
+        num_genres = int(num_genres) if num_genres else 3
+        model_config = utils.get_model_config_from_hash(model_hash)
+        if model_config["model"] == "statistical":
+            prediction = statistical_prediction.predict_string(model_config["genres"], model_config["dataset"], script, num_genres)
+        else:
+            prediction = transformer_prediction.predict_string(model_config["model"], model_config["genres"], model_config["dataset"], script, num_genres)
 
-        # TODO: Perform the model prediction based on the selected model and script
-        genres = [
-            "Genre 1",
-            "Genre 2",
-            "Genre 3",
-        ]  # Sample genres, replace with actual prediction
-        return html.Div(f'Predicted genres: {", ".join(genres)}')
+        return html.Div(f'Predicted genres: {", ".join(prediction)}')
 
+def update_trained_models():
+    trained_model_dropdown_options.clear()
+    for model in utils.available_models():
+        trained_model_dropdown_options.append(
+            {
+                "label": f"{model[0]} - {model[1]} - {', '.join(model[3])}", 
+                "value": model[2]
+            }
+        )
 
 if __name__ == "__main__":
+    for genre in utils.available_genres():
+        available_genres.append({"label": genre, "value": genre})
+
+    update_trained_models()
     app.run_server(debug=True)

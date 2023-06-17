@@ -10,7 +10,7 @@ from utils import hash_model_attributes
 
 def evaluate(model_name: str, genres: list[str], model_dataset: str = "imsdb", evaluation_dataset: str = "imsdb"):
     # load genres
-    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+    with open(f"./data/datasets/genres.json", "r") as f:
         all_genres = json.load(f)
 
     if len(genres) == 0:
@@ -19,11 +19,11 @@ def evaluate(model_name: str, genres: list[str], model_dataset: str = "imsdb", e
         genres = list(set(map(lambda x: x.strip(), genres)))
         genres = [ genre for genre in genres if genre in all_genres ]
 
-    full_dir_name = f"./models/sentence_transformer/{hash_model_attributes(model_name, genres, model_dataset)}"
+    path = f"./models/{hash_model_attributes(model_name, genres, model_dataset)}"
 
     # load model and config
-    model = tf.keras.models.load_model(f"{full_dir_name}/model.h5")
-    with open(f"{full_dir_name}/config.json", "r") as f:
+    model = tf.keras.models.load_model(f"{path}/model.h5")
+    with open(f"{path}/config.json", "r") as f:
         config = json.load(f)
     genres = config["genres"]
 
@@ -88,12 +88,12 @@ def evaluate(model_name: str, genres: list[str], model_dataset: str = "imsdb", e
     average_metrics["F1"] = total_F1 / total_predicted
 
     # save average metrics
-    os.makedirs(full_dir_name, exist_ok=True)
-    with open(f"{full_dir_name}/metrics.json", "w") as f:
+    os.makedirs(path, exist_ok=True)
+    with open(f"{path}/metrics.json", "w") as f:
         json.dump(average_metrics, f, indent=2)
 
     # save the results
-    with open(f"{full_dir_name}/predicted_truth.json", "w") as f:
+    with open(f"{path}/predicted_truth.json", "w") as f:
         json.dump(predicted_truth_set, f, indent=2)
     
     return total_predicted, average_metrics, predicted_truth_set

@@ -13,7 +13,7 @@ def dataset_split(dataset: str):
     with open(f"./data/datasets/{dataset}/final.json", "r") as f:
         data = json.load(f)
 
-    with open(f"./data/sentence_transformer_model/genres.json", "r") as f:
+    with open(f"./data/datasets/genres.json", "r") as f:
         genres = set(json.load(f))
 
     # split the data to train and test datasets 90/10

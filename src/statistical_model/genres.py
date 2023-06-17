@@ -12,11 +12,11 @@ def extract_genres(all_datasets: list[str] = ["imsdb", "dailyscript"]):
         for sample in data:
             genres.update(sample["genres"])
     
-    with open(f"./data/statistical_model/genres.json", "w") as f:
+    with open(f"./data/datasets/genres.json", "w") as f:
         json.dump(sorted(list(genres)), f, indent=2)
 
 def available_genres():
-    with open("./data/statistical_model/genres.json", "r") as f:
+    with open("./data/datasets/genres.json", "r") as f:
         return json.load(f)
 
 if __name__ == "__main__":
