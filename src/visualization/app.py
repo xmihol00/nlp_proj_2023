@@ -63,6 +63,9 @@ available_genres = [
     {"label": "All", "value": "all"},
 ]
 
+compared_models = [
+]
+
 # Define app layout
 app.layout = html.Div(
     [
@@ -365,6 +368,14 @@ app.layout = html.Div(
                                     html.Ul(id="evaluation-results"),
                                 ],
                             ),
+                            html.H3(
+                                "Model Comparison",
+                                style={"padding-top": "10px"}
+                            ),
+                            html.Div(
+                                id="model-comparison",
+                                children=compared_models, # TODO: replace with a nice plot
+                            )        
                         ],
                         style={"width": "50%", "margin": "auto"}),
                     ],
@@ -527,12 +538,17 @@ def enable_submit(title, text, genres, dataset):
 #    ],
 #)
 def submit_new_script(n_clicks, title, text, genres, dataset):
-    # TODO: Add the new script to the dataset
+    # TODO: - Pre-process the script
+    #       - Add the new script to the selected dataset
+    #       - Create embeddings for the new script for all transformer models
+    #       - Create labels for the new script for the transformer models (y_train_labels.npy)
+    #       - Append the new embeddings to the X_train_*.npy files
+    #       - Append the script also to the statistical model (train_dataset.json)
     if n_clicks:
         return html.Div("Script submitted 🎉")
 
 
-# TODO: Show the training curve when a model is selected
+# NTH: It would be nice to show the training curve as the model is trained, but this is not a priority. It might be quite difficult to implement.
 #@app.callback(
 #    Output("training-curve", "figure"),
 #    [Input("evaluation-model-dropdown", "value")],
@@ -632,7 +648,7 @@ def evaluate_model(n_clicks, model_hash, dataset):
 
         return (
             html.Div(f"Model evaluated on {total_predicted} samples:"),
-            [html.Li(f"{metric}: {value}") for metric, value in average_metrics.items()]
+            [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), average_metrics.items())]
         )
 
 @app.callback(
@@ -675,12 +691,8 @@ def webscrape_dataset(n_clicks, dataset):
     if n_clicks is not None:
         if dataset == "imsdb":
             os.system(f"python3 ./src/scraping/imsdb.py")
-            # TODO: fix imsdb scraper
-            #ImsdbScraper().run(overwrite=True)
         elif dataset == "dailyscript":
             os.system(f"python3 ./src/scraping/dailyscript.py")
-            # TODO: fix dailyscript scraper
-            #DailyscriptScraper().run(overwrite=True)
         
         update_scraped_datasets()
         return (
@@ -778,10 +790,27 @@ def update_available_genres():
     if len(available_genres) > 0:
         available_genres.insert(0, {"label": "all", "value": "all"})
 
+def update_compared_models():
+    compared_models.clear()
+    for evaluation in utils.models_with_metrics():
+        model, dataset, _, genres, metrics = evaluation
+        compared_models.append(
+            html.Div(children=[
+                # TODO: assign a color and shape to each model
+                html.Span(f"{model} - {dataset} - {', '.join(genres)}", style={"font-weight": "bold"}),
+                html.Span(f" evaluated on {metrics['dataset']} data set with {metrics['samples']} samples:"),
+                # TODO: instead of lists, create plots for each metric comparing the models
+                html.Ul(children=
+                    [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), metrics.items())]
+                )
+            ])
+        )
+
 if __name__ == "__main__":
     update_available_genres()
     update_scraped_datasets()
     update_preprocessed_datasets()
     update_models_with_embeddings()
     update_trained_models()
+    update_compared_models()
     app.run_server(debug=True)

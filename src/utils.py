@@ -131,13 +131,14 @@ def models_with_metrics() -> list[tuple[str, str, str, list[str], dict]]:
     """
 
     models = []
-    for model_dir in os.listdir("./models"):
-        if os.path.exists(os.path.join("./models", model_dir, "metrics.json")):
-            with open(os.path.join("./models", model_dir, "config.json")) as f:
-                config = json.load(f)
-            with open(os.path.join("./models", model_dir, "metrics.json")) as f:
-                metrics = json.load(f)
-            models.append((config["model"], config["dataset"], config["hash"], config["genres"], metrics))
+    if os.path.exists("./models"):
+        for model_dir in os.listdir("./models"):
+            if os.path.exists(os.path.join("./models", model_dir, "metrics.json")):
+                with open(os.path.join("./models", model_dir, "config.json")) as f:
+                    config = json.load(f)
+                with open(os.path.join("./models", model_dir, "metrics.json")) as f:
+                    metrics = json.load(f)
+                models.append((config["model"], config["dataset"], config["hash"], config["genres"], metrics))
         
     return models
 
