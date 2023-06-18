@@ -185,6 +185,7 @@ app.layout = html.Div(
                                 placeholder="Select a model...",
                                 options=models_embeddings_dropdown_options,
                             ),
+                            # TODO: make sure only datasets with embeddings are shown
                             dcc.Dropdown(
                                 id="dataset-dropdown",
                                 placeholder="Select a dataset...",
@@ -712,6 +713,7 @@ def update_models_with_embeddings():
             if (os.path.exists(f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model}.npy") and 
                 os.path.exists(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model}.npy")):
                 has_embeddings = True
+                # TODO: make sure only datasets with embeddings are shown
                 datasets_with_embeddings[dataset].append(model)
         
         if has_embeddings:
