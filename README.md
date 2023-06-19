@@ -54,6 +54,18 @@ There are currently two available models, which perform the prediction, a statis
 ```
 
 ## Web Scraping
+### Imsdb scraper
+For the imsdb data a web scraper that extracts movie script data from the IMSDb website is defined. 
+It utilizes the Scrapy library to crawl and scrape the website. The process_links() function is a utility function that cleans the URLs of the links. The ImsdbSpider class is a custom spider that extends the CrawlSpider class from Scrapy. It specifies the target website, the starting URL, and the rules for following links. The class also includes methods for extracting genres and scripts from the scraped data. The parse_item() method is the callback function that handles the response and extracts relevant information. The ImsdbScraper class is responsible for running the scraping process and saving the scraped data to a JSON file.
+
+To extract genres, the _get_genres_from_links() method is implemented. It takes a list of links as input and iterates over each link. It checks if the link's URL contains the word "genre" and if so, appends the link's text (which represents the genre) to a genres list. Finally, the method returns the list of genres.
+
+To extract scripts, the _get_script_from_links() method is utilized. It takes a list of links as input and iterates over each link. It checks if the link's text contains both the words "Read" and "Script". If a link satisfying this condition is found, it constructs the full script URL by appending the base URL to the link's href attribute. Then, it retrieves the content of the script page using urllib.request.urlopen(). The HTML content is parsed using BeautifulSoup, searching for the specific <td> element with the class "scrtext" and then extracting the text within the <pre> tag. The extracted script is returned as a string.
+
+Within the parse_item() method, after obtaining the response from the crawled URL, BeautifulSoup is used to parse the HTML content. It searches for the element that contains the genres information by finding the text "Genres" and navigating to its parent. From there, it finds all the <a> tags within that element. These links are then passed to the methods _get_genres_from_links() and _get_script_from_links() to extract the genres and script, respectively. The extracted title, genres, and script are yielded as a dictionary for each item scraped.
+
+
+### Dailyscript scraper
 
 ## Cleaning and Pre-processing
 The web-scraped data are partial HTML pages still with HTML tags left. Furthermore, the scripts itself needs cleaning and pre-processing, as there are many special characters unnecessary spaces etc., which is accomplished by the following pipeline:
