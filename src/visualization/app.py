@@ -17,7 +17,7 @@ import sentence_transformer_model.labels as transformer_labels
 import statistical_model.training as statistical_training
 import statistical_model.prediction as statistical_prediction
 import statistical_model.evaluation as statistical_evaluation
-import dataset_preparaion.merge as merge
+import dataset_preparation.merge as merge
 from scraping.dailyscript import DailyscriptScraper
 from scraping.imsdb import ImsdbScraper
 
@@ -661,12 +661,12 @@ def evaluate_model(n_clicks, model_hash, dataset):
 def preprocess_dataset(n_clicks, dataset):
     if n_clicks is not None:
         if dataset == "merged":
-            os.system(f"./src/dataset_preparaion/data_prep_pipeline.sh imsdb")
-            os.system(f"./src/dataset_preparaion/data_prep_pipeline.sh dailyscript")
+            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh imsdb")
+            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript")
             merge.merge_datasets()
             transformer_labels.encode_labels("merged")
         else:
-            os.system(f"./src/dataset_preparaion/data_prep_pipeline.sh {dataset}")
+            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh {dataset}")
             transformer_labels.encode_labels(dataset)
         return html.Div("Dataset preprocessed successfully!")
 

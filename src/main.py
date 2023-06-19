@@ -2,7 +2,7 @@ from typing import List
 
 import pandas as pd
 
-from src.dataset_preparaion.pipeline import MovieScriptPreprocessor, SampleT
+from src.dataset_preparation.pipeline import MovieScriptPreprocessor, SampleT
 from src.scraping.dailyscript import DailyscriptScraper
 from src.scraping.imsdb import ImsdbScraper
 
