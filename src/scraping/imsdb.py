@@ -88,4 +88,4 @@ if __name__ == "__main__":
         data = re.sub(r"^\]\[$", ",", data)
     
     with open("./data/scraped_data/scraped_imsdb_data.json", "w") as f:
-        json.dump(data, f)
+        f.write(data)

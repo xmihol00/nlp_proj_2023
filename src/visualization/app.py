@@ -14,9 +14,13 @@ import sentence_transformer_model.prediction as transformer_prediction
 import sentence_transformer_model.evaluation as transformer_evaluation
 import sentence_transformer_model.embeddings as transformer_embeddings
 import sentence_transformer_model.labels as transformer_labels
+import sentence_transformer_model.dataset_split as transformer_dataset_split
+import sentence_transformer_model.genres as transformer_genres
 import statistical_model.training as statistical_training
 import statistical_model.prediction as statistical_prediction
 import statistical_model.evaluation as statistical_evaluation
+import statistical_model.dataset_split as statistical_dataset_split
+import statistical_model.genres as statistical_genres
 import dataset_preparation.merge as merge
 from scraping.dailyscript import DailyscriptScraper
 from scraping.imsdb import ImsdbScraper
@@ -196,7 +200,7 @@ app.layout = html.Div(
                             ),
                             dcc.Dropdown(
                                 id="train-genre-dropdown",
-                                placeholder="Select the genres...",
+                                placeholder="Select genres...",
                                 options=available_genres,
                                 multi=True,
                                 style={
@@ -653,25 +657,42 @@ def evaluate_model(n_clicks, model_hash, dataset):
         )
 
 @app.callback(
-    Output("pre-processing-output", "children"),
+    [Output("pre-processing-output", "children"), Output("embeddings-dataset-dropdown", "options"), 
+     Output("dataset-dropdown", "options"), Output("train-genre-dropdown", "options")],
     [Input("pre-process-button", "n_clicks")],
     [State("preprocessed-dataset-dropdown", "value")],
     prevent_initial_call=True,
 )
 def preprocess_dataset(n_clicks, dataset):
-    if n_clicks is not None:
+    if n_clicks is not None:        
         if dataset == "merged":
             os.system(f"./src/dataset_preparation/data_prep_pipeline.sh imsdb")
             os.system(f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript")
+            transformer_genres.extract_genres()
+            statistical_genres.extract_genres()
+            transformer_dataset_split.split_dataset("merged")
+            statistical_dataset_split.split_dataset("merged")
             merge.merge_datasets()
             transformer_labels.encode_labels("merged")
         else:
             os.system(f"./src/dataset_preparation/data_prep_pipeline.sh {dataset}")
+            transformer_genres.extract_genres()
+            statistical_genres.extract_genres()
+            transformer_dataset_split.split_dataset(dataset)
+            statistical_dataset_split.split_dataset(dataset)
             transformer_labels.encode_labels(dataset)
-        return html.Div("Dataset preprocessed successfully!")
+
+        update_preprocessed_datasets()
+        update_available_genres()
+        return (
+            html.Div("Dataset preprocessed successfully!"), 
+            preprocessed_dataset_dropdown_options, 
+            preprocessed_dataset_dropdown_options, 
+            available_genres
+        )
 
 @app.callback(
-    Output("embeddings-output", "children"),
+    [Output("embeddings-output", "children"), Output("model-dropdown", "options")],
     [Input("embeddings-button", "n_clicks")],
     [State("embeddings-model-dropdown", "value"), State("embeddings-dataset-dropdown", "value")],
     prevent_initial_call=True,
@@ -680,7 +701,7 @@ def generate_embeddings(n_clicks, model, dataset):
     if n_clicks is not None:
         transformer_embeddings.generate_embeddings(model, f"./data/sentence_transformer_model/{dataset}")
         update_models_with_embeddings()
-        return html.Div("Embeddings generated successfully!")
+        return (html.Div("Embeddings generated successfully!"), models_embeddings_dropdown_options)
 
 @app.callback(
     [Output("web-scraping-output", "children"), Output("preprocessed-dataset-dropdown", "options")],
