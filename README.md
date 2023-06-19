@@ -3,7 +3,8 @@ This repository contains an implementation of a movie genre classification web a
 * web-scrape necessary training data sets, 
 * pre-process the data sets, 
 * train selected model on a selected data set with selected movie genres,
-* evaluate trained models on a test data set. 
+* evaluate trained models on a test data set.
+
 There are currently two available models, which perform the prediction, a statistical model and a machine learning model.
 
 ## Repository Structure
