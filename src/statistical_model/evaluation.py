@@ -74,7 +74,14 @@ def evaluate(genres: list[str], model_dataset: str = "imsdb", evaluation_dataset
     average_metrics["Average precision"] = total_precision / total_predicted
     average_metrics["Average F1"] = total_F1 / total_predicted
     average_metrics["samples"] = total_predicted
-    average_metrics["dataset"] = evaluation_dataset
+
+    # load current metrics
+    metrics = {}
+    if os.path.exists(f"{path}/metrics.json"):
+        with open(f"{path}/metrics.json", "r") as f:
+            metrics = json.load(f)
+
+    metrics[evaluation_dataset] = average_metrics
 
     # save average metrics
     with open(f"{path}/metrics.json", "w") as f:

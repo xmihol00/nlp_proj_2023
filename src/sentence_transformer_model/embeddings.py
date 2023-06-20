@@ -2,13 +2,20 @@ import argparse
 import numpy as np
 import json
 from sentence_transformers import SentenceTransformer
+import torch
 
 def generate_embeddings(model_name: str, path: str):
     # remove trailing slash from path
     if path[-1] == "/":
         path = path[:-1]
 
-    model = SentenceTransformer(model_name, device="cpu")
+    # check available device
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
+
+    model = SentenceTransformer(model_name, device=device)
     print(f"Using model: {model_name}")
 
     # load train dataset

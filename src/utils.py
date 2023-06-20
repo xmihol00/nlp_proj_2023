@@ -125,7 +125,7 @@ def get_model_config_from_hash(model_hash: str) -> dict:
     with open(os.path.join("./models", model_hash, "config.json")) as f:
         return json.load(f)
 
-def models_with_metrics() -> list[tuple[str, str, str, list[str], dict]]:
+def models_with_metrics() -> list[tuple[str, str, str, list[str], dict[str, dict]]]:
     """
     :return: list of tuples (model name, dataset name, hash, genres) with available metrics
     """
