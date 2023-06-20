@@ -214,7 +214,7 @@ app.layout = html.Div(
                                 dcc.Dropdown(
                                     id="dataset-dropdown",
                                     placeholder="Select a dataset...",
-                                    options=preprocessed_dataset_dropdown_options,
+                                    options=dataset_with_embeddings_dropdown_options,
                                     style={
                                         "margin-top": "10px",
                                     },
