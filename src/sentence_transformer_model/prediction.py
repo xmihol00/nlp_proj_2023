@@ -40,7 +40,7 @@ def predict_string(model_name: str, genres: list[str], dataset: str, script: str
     script_parts = []
     script = script.split()
     for i in range(0, len(script), 256):
-        script_parts.append(script[i:i+256])
+        script_parts.append(' '.join(script[i:i+256]))
 
     # create embeddings
     script_embeddings = sentence_transformer.encode(script_parts)

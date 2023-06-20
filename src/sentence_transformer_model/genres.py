@@ -7,12 +7,13 @@ def extract_genres(all_datasets: list[str] = ["imsdb", "dailyscript"]):
 
     genres = set()
     for dataset in all_datasets:
-        with open(f"./data/datasets/{dataset}/final.json", "r") as f:
-            data = json.load(f)
-
-        # get all genres to use as labels
-        for sample in data:
-            genres.update(sample["genres"])
+        if os.path.exists(f"./data/datasets/{dataset}/final.json"):
+            with open(f"./data/datasets/{dataset}/final.json", "r") as f:
+                data = json.load(f)
+    
+            # get all genres to use as labels
+            for sample in data:
+                genres.update(sample["genres"])
     
     with open(f"./data/datasets/genres.json", "w") as f:
         json.dump(sorted(list(genres)), f, indent=2)

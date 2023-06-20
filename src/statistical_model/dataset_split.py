@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-def dataset_split(dataset: str):
+def split_dataset(dataset: str):
     with open(f"./data/datasets/{dataset}/final_stemmed_no_stopwords.json", "r") as f:
         data = json.load(f)
 
@@ -32,4 +32,4 @@ if __name__ == "__main__":
                         help="Dataset to evaluate on.")
     args = parser.parse_args()
     
-    dataset_split(args.dataset)
+    split_dataset(args.dataset)

@@ -7,7 +7,7 @@ import random
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from seed import RANDOM_SEED
 
-def dataset_split(dataset: str):
+def split_dataset(dataset: str):
     os.makedirs(f"./data/sentence_transformer_model/{dataset}", exist_ok=True)
 
     with open(f"./data/datasets/{dataset}/final.json", "r") as f:
@@ -75,4 +75,4 @@ if __name__ == "__main__":
                         help="Dataset to split.")
     args = parser.parse_args()
     
-    dataset_split(args.dataset)
+    split_dataset(args.dataset)
