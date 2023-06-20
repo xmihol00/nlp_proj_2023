@@ -816,18 +816,19 @@ def update_available_genres():
 def update_compared_models():
     compared_models.clear()
     for evaluation in utils.models_with_metrics():
-        model, dataset, _, genres, metrics = evaluation
-        compared_models.append(
-            html.Div(children=[
-                # TODO: assign a color and shape to each model
-                html.Span(f"{model} - {dataset} - {', '.join(genres)}", style={"font-weight": "bold"}),
-                html.Span(f" evaluated on {metrics['dataset']} data set with {metrics['samples']} samples:"),
-                # TODO: instead of lists, create plots for each metric comparing the models
-                html.Ul(children=
-                    [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), metrics.items())]
-                )
-            ])
-        )
+        model, dataset, _, genres, metric_dataset_dict = evaluation
+        for evaluation_dataset, metrics in metric_dataset_dict.items():
+            compared_models.append(
+                html.Div(children=[
+                    # TODO: assign a color and shape to each model
+                    html.Span(f"{model} - {dataset} - {', '.join(genres)}", style={"font-weight": "bold"}),
+                    html.Span(f" evaluated on {evaluation_dataset} data set with {metrics['samples']} samples:"),
+                    # TODO: instead of lists, create plots for each metric comparing the models
+                    html.Ul(children=
+                        [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), metrics.items())]
+                    )
+                ])
+            )
 
 if __name__ == "__main__":
     update_available_genres()
