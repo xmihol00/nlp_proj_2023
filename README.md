@@ -57,15 +57,12 @@ There are currently two available models, which perform the prediction, a statis
 ### Imsdb scraper
 This scraper extracts movie script data from the IMSDb website. 
 It utilizes the Scrapy library to crawl and scrape the website. The `process_links()` function is a utility function that cleans the URLs of the links. The `ImsdbSpider` class is a custom spider that extends the `CrawlSpider` class from Scrapy. It specifies the target website, the starting URL, and the rules for following links. The class also includes methods for extracting genres and scripts from the scraped data. The `parse_item()` method is the callback function that handles the response and extracts relevant information. The `ImsdbScraper` class is responsible for running the scraping process and saving the scraped data to a JSON file.
-
-To extract genres, the `_get_genres_from_links()` method is implemented. It takes a list of links as input and iterates over each link. It checks if the link's URL contains the word "genre" and if so, appends the link's text (which represents the genre) to a `genres` list. Finally, the method returns the list of genres.
-
-To extract scripts, the `_get_script_from_links()` method is utilized. It takes a list of links as input and iterates over each link. It checks if the link's text contains both the words "Read" and "Script". If a link satisfying this condition is found, it constructs the full script URL by appending the base URL to the link's `href` attribute. Then, it retrieves the content of the script page using `urllib.request.urlopen()`. The HTML content is parsed using BeautifulSoup, searching for the specific `<td>` element with the class "scrtext" and then extracting the text within the `<pre>` tag. The extracted script is returned as a string.
-
 Within the `parse_item()` method, after obtaining the response from the crawled URL, BeautifulSoup is used to parse the HTML content. It searches for the element that contains the genres information by finding the text "Genres" and navigating to its parent. From there, it finds all the `<a>` tags within that element. These links are then passed to the methods `_get_genres_from_links()` and `_get_script_from_links()` to extract the genres and script, respectively. The extracted title, genres, and script are yielded as a dictionary for each item scraped.
 
 
 ### Dailyscript scraper
+The `DailyscriptScraper` class is designed to scrape movie scripts and genres from the "https://www.dailyscript.com/" website. It utilizes BeautifulSoup for HTML parsing and IMDb for genre information. The class includes various private methods, such as `_get_soup()` to retrieve webpage content, `_title_already_scraped()` to check if a movie has already been scraped, `_extract_movie_titles_and_script_links()` to obtain movie titles and script links, `_get_script()` to fetch movie scripts, `_get_genres_from_first_imdb_result()` to retrieve genres from IMDb, and `_save_data()` to store the scraped data in a JSON file. The main `run()` method orchestrates the scraping process, iterating through movies, checking their status, retrieving genres and scripts, and saving the data.
+
 
 ## Cleaning and Pre-processing
 The web-scraped data are partial HTML pages still with HTML tags left. Furthermore, the scripts itself needs cleaning and pre-processing, as there are many special characters unnecessary spaces etc., which is accomplished by the following pipeline:
@@ -135,3 +132,34 @@ The performance of the machine learning models trained on the `merged` data set 
     * Average F1 score: 0.498
 
 ## Web Application
+
+The web application is implemented as a dash app. It consists of several tabs that provide different functionalities for data processing, model training, genre prediction, and model evaluation. Each tab serves a specific purpose and offers intuitive user interfaces for easy interaction.
+
+### Data Sets Tab
+In this tab, you can perform web scraping and data pre-processing tasks.  
+For each step the previous step has to be executed at least once to work.
+
+- **Web Scraping**: Select a data set from the dropdown menu and click the "Web Scrape" button to initiate the web scraping process. The scraped data will be displayed in a loading component.
+
+- **Pre-process**: Choose a data set for pre-processing using the dropdown menu. Click the "Pre-process" button to start the pre-processing. The pre-processed output will be shown in a loading component.
+
+- **Generate Embedding**: Select a data set and a model from the respective dropdown menus. Click the "Generate Embedding" button to generate embeddings for the chosen data set. The generated embeddings will be displayed in a loading component.
+
+### Train Tab
+In this tab, you can train and retrain models.
+
+- **Training**: Choose a model and a data set from the dropdown menus. Additionally, select the desired genres for training (multi-select is available). Click the "Train" button to begin the training process. The progress will be shown in a loading component.
+
+- **Retrain**: Select a trained model from the dropdown menu and click the "Retrain" button to initiate the retraining process.
+
+### Prediction Tab
+In this tab, you can predict genres based on trained models.
+
+- **Predict Genre**: Select a trained model from the dropdown menu. Enter the number of genres to predict and provide a script in the textarea. Click the "Predict" button to generate genre predictions. The predictions will be displayed in a loading component.
+
+### Evaluation Tab
+In this tab, you can evaluate trained models and compare their performance.
+
+- **Model Evaluation**: Choose a trained model and a data set from the respective dropdown menus. Click the "Evaluate" button to evaluate the selected model's performance. The evaluation results will be shown in a loading component.
+
+- **Model Comparison**: This section provides a visual comparison of models
