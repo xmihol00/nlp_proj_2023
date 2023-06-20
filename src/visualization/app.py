@@ -36,11 +36,8 @@ models = [
 ]
 
 # models
-model_dropdown_options = [
-    {"label": model, "value": model} for model in models
-]
-models_embeddings_dropdown_options = [
-]
+model_dropdown_options = [{"label": model, "value": model} for model in models]
+models_embeddings_dropdown_options = []
 
 # datasets
 web_dataset_dropdown_options = [
@@ -52,23 +49,21 @@ dataset_dropdown_options = [
     "dailyscript",
     "merged",
 ]
-scraped_dataset_dropdown_options = [
-]
-preprocessed_dataset_dropdown_options = [
-]
+scraped_dataset_dropdown_options = []
+preprocessed_dataset_dropdown_options = []
 datasets_with_embeddings = {
     "imsdb": [],
     "dailyscript": [],
     "merged": [],
 }
+dataset_with_embeddings_dropdown_options = []
 
-trained_model_dropdown_options = [ ]
+trained_model_dropdown_options = []
 available_genres = [
     {"label": "All", "value": "all"},
 ]
 
-compared_models = [
-]
+compared_models = []
 
 # Define app layout
 app.layout = html.Div(
@@ -81,312 +76,351 @@ app.layout = html.Div(
                     label="Data Sets",
                     value="tab-data-sets",
                     children=[
-                        html.Div(children=[
-                            html.H3("Web Scrape", style={"margin-top": "10px"}),
-                            dcc.Dropdown(
-                                id="web-scrape-dataset-dropdown",
-                                placeholder="Select a data set to be web scraped...",
-                                options=web_dataset_dropdown_options,
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Web Scrape",
-                                        id="web-scrape-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            dcc.Loading(
-                                id="web-scraping-loading",
-                                children=[html.Div(id="web-scraping-output", style={"margin-top": "10px"})],
-                            ),
-                            html.H3("Pre-process", style={"padding-top": "10px"}),
-                            dcc.Dropdown(
-                                id="preprocessed-dataset-dropdown",
-                                placeholder="Select a data set for pre-processing...",
-                                options=scraped_dataset_dropdown_options,
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Pre-process",
-                                        id="pre-process-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            dcc.Loading(
-                                id="pre-processing-loading",
-                                children=[html.Div(id="pre-processing-output", style={"margin-top": "10px"})],
-                            ),
-                            html.H3("Generate Embedding", style={"padding-top": "10px"}),
-                            dcc.Dropdown(
-                                id="embeddings-dataset-dropdown",
-                                placeholder="Select a data set to generate embeddings for...",
-                                options=preprocessed_dataset_dropdown_options,
-                            ),
-                            dcc.Dropdown(
-                                id="embeddings-model-dropdown",
-                                placeholder="Select a model to generate embeddings for...",
-                                options=model_dropdown_options,
-                                style={ "margin-top": "10px" },
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Generate Embedding",
-                                        id="embeddings-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            dcc.Loading(
-                                id="embeddings-loading",
-                                children=[html.Div(id="embeddings-output", style={"margin-top": "10px"})],
-                            ),
-                        ], style={"width": "50%", "margin": "auto"}),
+                        html.Div(
+                            children=[
+                                html.H3(
+                                    "Web Scrape", style={"margin-top": "10px"}
+                                ),
+                                dcc.Dropdown(
+                                    id="web-scrape-dataset-dropdown",
+                                    placeholder="Select a data set to be web scraped...",
+                                    options=web_dataset_dropdown_options,
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Web Scrape",
+                                            id="web-scrape-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                dcc.Loading(
+                                    id="web-scraping-loading",
+                                    children=[
+                                        html.Div(
+                                            id="web-scraping-output",
+                                            style={"margin-top": "10px"},
+                                        )
+                                    ],
+                                ),
+                                html.H3(
+                                    "Pre-process",
+                                    style={"padding-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="preprocessed-dataset-dropdown",
+                                    placeholder="Select a data set for pre-processing...",
+                                    options=scraped_dataset_dropdown_options,
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Pre-process",
+                                            id="pre-process-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                dcc.Loading(
+                                    id="pre-processing-loading",
+                                    children=[
+                                        html.Div(
+                                            id="pre-processing-output",
+                                            style={"margin-top": "10px"},
+                                        )
+                                    ],
+                                ),
+                                html.H3(
+                                    "Generate Embedding",
+                                    style={"padding-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="embeddings-dataset-dropdown",
+                                    placeholder="Select a data set to generate embeddings for...",
+                                    options=preprocessed_dataset_dropdown_options,
+                                ),
+                                dcc.Dropdown(
+                                    id="embeddings-model-dropdown",
+                                    placeholder="Select a model to generate embeddings for...",
+                                    options=model_dropdown_options,
+                                    style={"margin-top": "10px"},
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Generate Embedding",
+                                            id="embeddings-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                dcc.Loading(
+                                    id="embeddings-loading",
+                                    children=[
+                                        html.Div(
+                                            id="embeddings-output",
+                                            style={"margin-top": "10px"},
+                                        )
+                                    ],
+                                ),
+                            ],
+                            style={"width": "50%", "margin": "auto"},
+                        ),
                     ],
                 ),
                 dcc.Tab(
                     label="Train",
                     value="tab-train",
                     children=[
-                        html.Div(children=[
-                            html.H3(
-                                "Training",
-                                style={"margin-top": "10px"},
-                            ),
-                            dcc.Dropdown(
-                                id="model-dropdown",
-                                placeholder="Select a model...",
-                                options=models_embeddings_dropdown_options,
-                            ),
-                            # TODO: make sure only datasets with embeddings are shown
-                            dcc.Dropdown(
-                                id="dataset-dropdown",
-                                placeholder="Select a dataset...",
-                                options=preprocessed_dataset_dropdown_options,
-                                style={
-                                    "margin-top": "10px",
-                                },
-                            ),
-                            dcc.Dropdown(
-                                id="train-genre-dropdown",
-                                placeholder="Select genres...",
-                                options=available_genres,
-                                multi=True,
-                                style={
-                                    "margin-top": "10px",
-                                },
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Train",
-                                        id="train-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            html.H3(
-                                "Retrain",
-                                style={"padding-top": "10px"},
-                            ),
-                            dcc.Dropdown(
-                                id="retrain-model-dropdown",
-                                placeholder="Select a trained model...",
-                                options=trained_model_dropdown_options,
-                                optionHeight=80,
-                                maxHeight=500
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Retrain",
-                                        id="retrain-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            html.Br(),
-                            dcc.Loading(
-                                id="training-loading",
-                                children=[html.Div(id="train-output")],
-                            )
-                        ],
-                        style={"width": "50%", "margin": "auto"}),
+                        html.Div(
+                            children=[
+                                html.H3(
+                                    "Training",
+                                    style={"margin-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="model-dropdown",
+                                    placeholder="Select a model...",
+                                    options=models_embeddings_dropdown_options,
+                                ),
+                                dcc.Dropdown(
+                                    id="dataset-dropdown",
+                                    placeholder="Select a dataset...",
+                                    options=preprocessed_dataset_dropdown_options,
+                                    style={
+                                        "margin-top": "10px",
+                                    },
+                                ),
+                                dcc.Dropdown(
+                                    id="train-genre-dropdown",
+                                    placeholder="Select genres...",
+                                    options=available_genres,
+                                    multi=True,
+                                    style={
+                                        "margin-top": "10px",
+                                    },
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Train",
+                                            id="train-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                html.H3(
+                                    "Retrain",
+                                    style={"padding-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="retrain-model-dropdown",
+                                    placeholder="Select a trained model...",
+                                    options=trained_model_dropdown_options,
+                                    optionHeight=80,
+                                    maxHeight=500,
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Retrain",
+                                            id="retrain-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                html.Br(),
+                                dcc.Loading(
+                                    id="training-loading",
+                                    children=[html.Div(id="train-output")],
+                                ),
+                            ],
+                            style={"width": "50%", "margin": "auto"},
+                        ),
                     ],
                 ),
                 dcc.Tab(
                     label="Prediction",
                     value="tab-predict",
                     children=[
-                        html.Div(children=[
-                            html.H3(
-                                "Predict Genre",
-                                style={"margin-top": "10px"},
-                            ),
-                            dcc.Dropdown(
-                                id="trained-model-dropdown",
-                                placeholder="Select a trained model...",
-                                options=trained_model_dropdown_options,
-                                optionHeight=80,
-                                maxHeight=500
-                            ),
-                            dcc.Input(
-                                id="num-genres-input",
-                                type="number",
-                                placeholder="Enter a number of genres to predict...",
-                                style={
-                                    "margin-top": "10px",
-                                    "width": "100%",
-                                },
-                            ),
-                            dcc.Textarea(
-                                id="script-textarea",
-                                placeholder="Enter a script...",
-                                style={
-                                    "margin-top": "10px",
-                                    "height": "200px",
-                                    "width": "100%",
-                                },
-                            ),
-                            html.Br(),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Predict",
-                                        id="predict-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            dcc.Loading(
-                                id="predict-loading",
-                                children=[html.Div(id="predict-output", style={"margin-top": "10px"})],
-                            ),
-                        ],
-                        style={"width": "50%", "margin": "auto"}),
+                        html.Div(
+                            children=[
+                                html.H3(
+                                    "Predict Genre",
+                                    style={"margin-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="trained-model-dropdown",
+                                    placeholder="Select a trained model...",
+                                    options=trained_model_dropdown_options,
+                                    optionHeight=80,
+                                    maxHeight=500,
+                                ),
+                                dcc.Input(
+                                    id="num-genres-input",
+                                    type="number",
+                                    placeholder="Enter a number of genres to predict...",
+                                    style={
+                                        "margin-top": "10px",
+                                        "width": "100%",
+                                    },
+                                ),
+                                dcc.Textarea(
+                                    id="script-textarea",
+                                    placeholder="Enter a script...",
+                                    style={
+                                        "margin-top": "10px",
+                                        "height": "200px",
+                                        "width": "100%",
+                                    },
+                                ),
+                                html.Br(),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Predict",
+                                            id="predict-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                dcc.Loading(
+                                    id="predict-loading",
+                                    children=[
+                                        html.Div(
+                                            id="predict-output",
+                                            style={"margin-top": "10px"},
+                                        )
+                                    ],
+                                ),
+                            ],
+                            style={"width": "50%", "margin": "auto"},
+                        ),
                     ],
                 ),
                 dcc.Tab(
                     label="Evaluation",
                     value="tab-evaluate",
                     children=[
-                        html.Div(children=[
-                            html.H3(
-                                "Model Evaluation",
-                                style={"margin-top": "10px"}
-                            ),
-                            dcc.Dropdown(
-                                id="evaluation-model-dropdown",
-                                placeholder="Select a trained model...",
-                                options=trained_model_dropdown_options,
-                                optionHeight=80,
-                                maxHeight=500
-                            ),
-                            dcc.Dropdown(
-                                id="evaluation-dataset-dropdown",
-                                placeholder="Select a data set to evaluate on...",
-                                options=preprocessed_dataset_dropdown_options,
-                                style={
-                                    "margin-top": "10px",
-                                },
-                            ),
-                            html.Div(
-                                children=[
-                                    html.Button(
-                                        "Evaluate",
-                                        id="evaluate-button",
-                                        style={
-                                            "margin-top": "10px",
-                                            "height": "50px",
-                                            "width": "100%",
-                                        },
-                                    ),
-                                ],
-                                style={
-                                    "width": "25%",
-                                    "height": "50px",
-                                    "margin": "auto",
-                                },
-                            ),
-                            dcc.Loading(
-                                id="evaluating-loading",
-                                children=[
-                                    html.Div(id="evaluation-output", style={"margin-top": "10px"}),
-                                    html.Ul(id="evaluation-results"),
-                                ],
-                            ),
-                            html.H3(
-                                "Model Comparison",
-                                style={"padding-top": "10px"}
-                            ),
-                            html.Div(
-                                id="model-comparison",
-                                children=compared_models, # TODO: replace with a nice plot
-                            )        
-                        ],
-                        style={"width": "50%", "margin": "auto"}),
+                        html.Div(
+                            children=[
+                                html.H3(
+                                    "Model Evaluation",
+                                    style={"margin-top": "10px"},
+                                ),
+                                dcc.Dropdown(
+                                    id="evaluation-model-dropdown",
+                                    placeholder="Select a trained model...",
+                                    options=trained_model_dropdown_options,
+                                    optionHeight=80,
+                                    maxHeight=500,
+                                ),
+                                dcc.Dropdown(
+                                    id="evaluation-dataset-dropdown",
+                                    placeholder="Select a data set to evaluate on...",
+                                    options=preprocessed_dataset_dropdown_options,
+                                    style={
+                                        "margin-top": "10px",
+                                    },
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Button(
+                                            "Evaluate",
+                                            id="evaluate-button",
+                                            style={
+                                                "margin-top": "10px",
+                                                "height": "50px",
+                                                "width": "100%",
+                                            },
+                                        ),
+                                    ],
+                                    style={
+                                        "width": "25%",
+                                        "height": "50px",
+                                        "margin": "auto",
+                                    },
+                                ),
+                                dcc.Loading(
+                                    id="evaluating-loading",
+                                    children=[
+                                        html.Div(
+                                            id="evaluation-output",
+                                            style={"margin-top": "10px"},
+                                        ),
+                                        html.Ul(id="evaluation-results"),
+                                    ],
+                                ),
+                                html.H3(
+                                    "Model Comparison",
+                                    style={"padding-top": "10px"},
+                                ),
+                                html.Div(
+                                    id="model-comparison",
+                                    children=compared_models,  # TODO: replace with a nice plot
+                                ),
+                            ],
+                            style={"width": "50%", "margin": "auto"},
+                        ),
                     ],
                 ),
-                #TODO: move the functionality to Data sets tab
-                #dcc.Tab(
+                # TODO: move the functionality to Data sets tab
+                # dcc.Tab(
                 #    label="Add Data",
                 #    value="tab-add-data",
                 #    children=[
@@ -441,21 +475,27 @@ app.layout = html.Div(
                 #        ),
                 #        html.Div(id="submit-new-script-output"),
                 #    ],
-                #),
+                # ),
             ],
         )
     ],
 )
 
+
 # Callback to enable and disable the training unless a model and dataset are selected
 @app.callback(
     Output("train-button", "disabled"),
-    [Input("dataset-dropdown", "value"), Input("model-dropdown", "value"), Input("train-genre-dropdown", "value")],
+    [
+        Input("dataset-dropdown", "value"),
+        Input("model-dropdown", "value"),
+        Input("train-genre-dropdown", "value"),
+    ],
 )
 def enable_train(dataset, model, genre):
     if dataset and model and genre:
         return False
     return True
+
 
 # Callback to enable and disable the retraining unless a model is selected
 @app.callback(
@@ -467,25 +507,34 @@ def enable_train(model):
         return False
     return True
 
+
 # Callback to enable and disable the training unless a model and dataset are selected
 @app.callback(
     Output("predict-button", "disabled"),
-    [Input("script-textarea", "value"),Input("trained-model-dropdown", "value")],
+    [
+        Input("script-textarea", "value"),
+        Input("trained-model-dropdown", "value"),
+    ],
 )
 def enable_predict(text, model):
     if text and model:
         return False
     return True
 
+
 # Callback to enable and disable the evaluation unless a model and dataset are selected
 @app.callback(
     Output("evaluate-button", "disabled"),
-    [Input("evaluation-model-dropdown", "value"), Input("evaluation-dataset-dropdown", "value")],
+    [
+        Input("evaluation-model-dropdown", "value"),
+        Input("evaluation-dataset-dropdown", "value"),
+    ],
 )
 def enable_evaluate(model, dataset):
     if model and dataset:
         return False
     return True
+
 
 # Callback to enable and disable the evaluation unless a model and dataset are selected
 @app.callback(
@@ -497,6 +546,7 @@ def enable_webscraping(dataset):
         return False
     return True
 
+
 @app.callback(
     Output("pre-process-button", "disabled"),
     [Input("preprocessed-dataset-dropdown", "value")],
@@ -506,17 +556,22 @@ def enable_preprocess(dataset):
         return False
     return True
 
+
 @app.callback(
     Output("embeddings-button", "disabled"),
-    [Input("embeddings-dataset-dropdown", "value"), Input("embeddings-model-dropdown", "value")],
+    [
+        Input("embeddings-dataset-dropdown", "value"),
+        Input("embeddings-model-dropdown", "value"),
+    ],
 )
 def enable_embeddings(dataset, model):
     if dataset and model:
         return False
     return True
 
+
 # TODO: Callback to enable submit button unless all fields are filled
-#@app.callback(
+# @app.callback(
 #    Output("submit-new-script-button", "disabled"),
 #    [
 #        Input("new-script-title-input", "value"),
@@ -524,15 +579,16 @@ def enable_embeddings(dataset, model):
 #        Input("new-script-genre-dropdown", "value"),
 #        Input("new-script-dataset-dropdown", "value"),
 #    ],
-#)
+# )
 def enable_submit(title, text, genres, dataset):
     if title and text and genres and dataset:
         # TODO: Check if the title is unique
         return False
     return True
 
+
 # TODO: Callback to submit a new script
-#@app.callback(
+# @app.callback(
 #    Output("submit-new-script-output", "children"),
 #    Input("submit-new-script-button", "n_clicks"),
 #    [
@@ -541,7 +597,7 @@ def enable_submit(title, text, genres, dataset):
 #        State("new-script-genre-dropdown", "value"),
 #        State("new-script-dataset-dropdown", "value"),
 #    ],
-#)
+# )
 def submit_new_script(n_clicks, title, text, genres, dataset):
     # TODO: - Pre-process the script
     #       - Add the new script to the selected dataset
@@ -554,10 +610,10 @@ def submit_new_script(n_clicks, title, text, genres, dataset):
 
 
 # NTH: It would be nice to show the training curve as the model is trained, but this is not a priority. It might be quite difficult to implement.
-#@app.callback(
+# @app.callback(
 #    Output("training-curve", "figure"),
 #    [Input("evaluation-model-dropdown", "value")],
-#)
+# )
 def show_training_curve(model):
     # Demo x and y values
     time.sleep(2)
@@ -568,6 +624,7 @@ def show_training_curve(model):
         return {"data": [{"x": x, "y": y}]}
     return {"data": [{"x": [], "y": []}]}
 
+
 # Callback for training the model
 @app.callback(
     [
@@ -577,7 +634,11 @@ def show_training_curve(model):
         Output("retrain-model-dropdown", "options"),
     ],
     [Input("train-button", "n_clicks")],
-    [State("dataset-dropdown", "value"), State("model-dropdown", "value"), State("train-genre-dropdown", "value")],
+    [
+        State("dataset-dropdown", "value"),
+        State("model-dropdown", "value"),
+        State("train-genre-dropdown", "value"),
+    ],
     prevent_initial_call=True,
 )
 def train_model(n_clicks, dataset, model, genres):
@@ -589,7 +650,7 @@ def train_model(n_clicks, dataset, model, genres):
             statistical_training.train(genres, dataset)
         else:
             transformer_training.train(model, genres, dataset)
-        
+
         update_trained_models()
         return (
             html.Div("Model trained successfully!"),
@@ -609,12 +670,19 @@ def retrain_model(n_clicks, model_hash):
     if n_clicks is not None:
         model_config = utils.get_model_config_from_hash(model_hash)
         if model_config["model"] == "statistical":
-            statistical_training.train(model_config["dataset"], model_config["genres"])
+            statistical_training.train(
+                model_config["dataset"], model_config["genres"]
+            )
         else:
-            transformer_training.train(model_config["model"], model_config["genres"], model_config["dataset"])
-        
+            transformer_training.train(
+                model_config["model"],
+                model_config["genres"],
+                model_config["dataset"],
+            )
+
         update_trained_models()
         return html.Div("Model retrained successfully!")
+
 
 # Callback for predicting the genre
 @app.callback(
@@ -623,7 +691,7 @@ def retrain_model(n_clicks, model_hash):
     [
         State("script-textarea", "value"),
         State("trained-model-dropdown", "value"),
-        State("num-genres-input", "value")
+        State("num-genres-input", "value"),
     ],
 )
 def predict_genre(n_clicks, script, model_hash, num_genres):
@@ -631,43 +699,80 @@ def predict_genre(n_clicks, script, model_hash, num_genres):
         num_genres = int(num_genres) if num_genres else 3
         model_config = utils.get_model_config_from_hash(model_hash)
         if model_config["model"] == "statistical":
-            prediction = statistical_prediction.predict_string(model_config["genres"], model_config["dataset"], script, num_genres)
+            prediction = statistical_prediction.predict_string(
+                model_config["genres"],
+                model_config["dataset"],
+                script,
+                num_genres,
+            )
         else:
-            prediction = transformer_prediction.predict_string(model_config["model"], model_config["genres"], model_config["dataset"], script, num_genres)
+            prediction = transformer_prediction.predict_string(
+                model_config["model"],
+                model_config["genres"],
+                model_config["dataset"],
+                script,
+                num_genres,
+            )
 
         return html.Div(f'Predicted genres: {", ".join(prediction)}')
 
+
 @app.callback(
-    [Output("evaluation-output", "children"), Output("evaluation-results", "children")],
+    [
+        Output("evaluation-output", "children"),
+        Output("evaluation-results", "children"),
+    ],
     [Input("evaluate-button", "n_clicks")],
-    [State("evaluation-model-dropdown", "value"), State("evaluation-dataset-dropdown", "value")],
+    [
+        State("evaluation-model-dropdown", "value"),
+        State("evaluation-dataset-dropdown", "value"),
+    ],
     prevent_initial_call=True,
 )
 def evaluate_model(n_clicks, model_hash, dataset):
     if n_clicks is not None:
         model_config = utils.get_model_config_from_hash(model_hash)
         if model_config["model"] == "statistical":
-            total_predicted, average_metrics = statistical_evaluation.evaluate(model_config["genres"], model_config["dataset"], dataset)
+            total_predicted, average_metrics = statistical_evaluation.evaluate(
+                model_config["genres"], model_config["dataset"], dataset
+            )
         else:
-            total_predicted, average_metrics = transformer_evaluation.evaluate(model_config["model"], model_config["genres"], model_config["dataset"], dataset)
+            total_predicted, average_metrics = transformer_evaluation.evaluate(
+                model_config["model"],
+                model_config["genres"],
+                model_config["dataset"],
+                dataset,
+            )
 
         return (
             html.Div(f"Model evaluated on {total_predicted} samples:"),
-            [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), average_metrics.items())]
+            [
+                html.Li(f"{metric}: {value}")
+                for metric, value in filter(
+                    lambda x: x[0].startswith("Average"),
+                    average_metrics.items(),
+                )
+            ],
         )
 
+
 @app.callback(
-    [Output("pre-processing-output", "children"), Output("embeddings-dataset-dropdown", "options"), 
-     Output("dataset-dropdown", "options"), Output("train-genre-dropdown", "options")],
+    [
+        Output("pre-processing-output", "children"),
+        Output("embeddings-dataset-dropdown", "options"),
+        Output("train-genre-dropdown", "options"),
+    ],
     [Input("pre-process-button", "n_clicks")],
     [State("preprocessed-dataset-dropdown", "value")],
     prevent_initial_call=True,
 )
 def preprocess_dataset(n_clicks, dataset):
-    if n_clicks is not None:        
+    if n_clicks is not None:
         if dataset == "merged":
             os.system(f"./src/dataset_preparation/data_prep_pipeline.sh imsdb")
-            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript")
+            os.system(
+                f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript"
+            )
             transformer_genres.extract_genres()
             statistical_genres.extract_genres()
             transformer_dataset_split.split_dataset("merged")
@@ -675,7 +780,9 @@ def preprocess_dataset(n_clicks, dataset):
             merge.merge_datasets()
             transformer_labels.encode_labels("merged")
         else:
-            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh {dataset}")
+            os.system(
+                f"./src/dataset_preparation/data_prep_pipeline.sh {dataset}"
+            )
             transformer_genres.extract_genres()
             statistical_genres.extract_genres()
             transformer_dataset_split.split_dataset(dataset)
@@ -685,26 +792,41 @@ def preprocess_dataset(n_clicks, dataset):
         update_preprocessed_datasets()
         update_available_genres()
         return (
-            html.Div("Dataset preprocessed successfully!"), 
-            preprocessed_dataset_dropdown_options, 
-            preprocessed_dataset_dropdown_options, 
-            available_genres
+            html.Div("Dataset preprocessed successfully!"),
+            preprocessed_dataset_dropdown_options,
+            available_genres,
         )
 
+
 @app.callback(
-    [Output("embeddings-output", "children"), Output("model-dropdown", "options")],
+    [
+        Output("embeddings-output", "children"),
+        Output("model-dropdown", "options"),
+    ],
     [Input("embeddings-button", "n_clicks")],
-    [State("embeddings-model-dropdown", "value"), State("embeddings-dataset-dropdown", "value")],
+    [
+        State("embeddings-model-dropdown", "value"),
+        State("embeddings-dataset-dropdown", "value"),
+    ],
     prevent_initial_call=True,
 )
 def generate_embeddings(n_clicks, model, dataset):
     if n_clicks is not None:
-        transformer_embeddings.generate_embeddings(model, f"./data/sentence_transformer_model/{dataset}")
+        transformer_embeddings.generate_embeddings(
+            model, f"./data/sentence_transformer_model/{dataset}"
+        )
         update_models_with_embeddings()
-        return (html.Div("Embeddings generated successfully!"), models_embeddings_dropdown_options)
+        return (
+            html.Div("Embeddings generated successfully!"),
+            models_embeddings_dropdown_options,
+        )
+
 
 @app.callback(
-    [Output("web-scraping-output", "children"), Output("preprocessed-dataset-dropdown", "options")],
+    [
+        Output("web-scraping-output", "children"),
+        Output("preprocessed-dataset-dropdown", "options"),
+    ],
     [Input("web-scrape-button", "n_clicks")],
     [State("web-scrape-dataset-dropdown", "value")],
     prevent_initial_call=True,
@@ -715,119 +837,133 @@ def webscrape_dataset(n_clicks, dataset):
             os.system(f"python3 ./src/scraping/imsdb.py")
         elif dataset == "dailyscript":
             os.system(f"python3 ./src/scraping/dailyscript.py")
-        
+
         update_scraped_datasets()
         return (
             html.Div("Dataset web scraped successfully!"),
-            scraped_dataset_dropdown_options
+            scraped_dataset_dropdown_options,
         )
+
+# Callback that triggers if a model was selected to be trainend that modifies the
+# Datset dropdown to only show datasets that have embeddings for that model
+@app.callback(
+    Output("dataset-dropdown", "options"),
+    [Input("model-dropdown", "value")],
+)
+def update_datasets_with_embeddings(model):
+    dataset_with_embeddings_dropdown_options = []
+    for dataset in datasets_with_embeddings:
+        if model in datasets_with_embeddings[dataset]:
+            dataset_with_embeddings_dropdown_options.append(
+                {"label": dataset, "value": dataset}
+            )
+    return dataset_with_embeddings_dropdown_options
 
 def update_models_with_embeddings():
     models_embeddings_dropdown_options.clear()
-    models_embeddings_dropdown_options.append({"label": "statistical", "value": "statistical"})
+    models_embeddings_dropdown_options.append(
+        {"label": "statistical", "value": "statistical"}
+    )
     for dataset in dataset_dropdown_options:
         datasets_with_embeddings[dataset].clear()
 
     for model in models:
         has_embeddings = False
         for dataset in dataset_dropdown_options:
-            if (os.path.exists(f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model}.npy") and 
-                os.path.exists(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model}.npy")):
+            if os.path.exists(
+                f"./data/sentence_transformer_model/{dataset}/X_test_embeddings_{model}.npy"
+            ) and os.path.exists(
+                f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model}.npy"
+            ):
                 has_embeddings = True
-                # TODO: make sure only datasets with embeddings are shown
                 datasets_with_embeddings[dataset].append(model)
-        
+
         if has_embeddings:
-            models_embeddings_dropdown_options.append({"label": model, "value": model})
+            models_embeddings_dropdown_options.append(
+                {"label": model, "value": model}
+            )
 
 def update_trained_models():
     trained_model_dropdown_options.clear()
     for model in utils.available_models():
         trained_model_dropdown_options.append(
             {
-                "label": f"{model[0]} - {model[1]} - {', '.join(model[3])}", 
-                "value": model[2]
+                "label": f"{model[0]} - {model[1]} - {', '.join(model[3])}",
+                "value": model[2],
             }
         )
+
 
 def update_scraped_datasets():
     scraped_dataset_dropdown_options.clear()
     if os.path.exists("./data/scraped_data/scraped_imsdb_data.json"):
         scraped_dataset_dropdown_options.append(
-            {
-                "label": "imsdb", 
-                "value": "imsdb"
-            }
+            {"label": "imsdb", "value": "imsdb"}
         )
     if os.path.exists("./data/scraped_data/scraped_dailyscript_data.json"):
         scraped_dataset_dropdown_options.append(
-            {
-                "label": "dailyscript", 
-                "value": "dailyscript"
-            }
+            {"label": "dailyscript", "value": "dailyscript"}
         )
     if len(scraped_dataset_dropdown_options) == 2:
         scraped_dataset_dropdown_options.append(
-            {
-                "label": "merged", 
-                "value": "merged"
-            }
+            {"label": "merged", "value": "merged"}
         )
+
 
 def update_preprocessed_datasets():
     preprocessed_dataset_dropdown_options.clear()
-    if (os.path.exists("./data/sentence_transformer_model/dailyscript/test_dataset_whole_scripts.json") and 
-        os.path.exists("./data/sentence_transformer_model/dailyscript/test_dataset.json") and 
-        os.path.exists("./data/sentence_transformer_model/dailyscript/train_dataset.json")):
-        preprocessed_dataset_dropdown_options.append(
-            {
-                "label": "dailyscript", 
-                "value": "dailyscript"
-            }
-        )
-        
-    if (os.path.exists("./data/sentence_transformer_model/imsdb/test_dataset_whole_scripts.json") and
-        os.path.exists("./data/sentence_transformer_model/imsdb/test_dataset.json") and
-        os.path.exists("./data/sentence_transformer_model/imsdb/train_dataset.json")):
-        preprocessed_dataset_dropdown_options.append(
-            {
-                "label": "imsdb", 
-                "value": "imsdb"
-            }
-        )
-    if (os.path.exists("./data/sentence_transformer_model/merged/test_dataset_whole_scripts.json") and
-        os.path.exists("./data/sentence_transformer_model/merged/test_dataset.json") and
-        os.path.exists("./data/sentence_transformer_model/merged/train_dataset.json")):
-        preprocessed_dataset_dropdown_options.append(
-            {
-                "label": "merged", 
-                "value": "merged"
-            }
-        )
-    
+    for dataset in dataset_dropdown_options:
+        path_prefix = "./data/sentence_transformer_model/"
+        if (
+            os.path.exists(f"{path_prefix}{dataset}/test_dataset_whole_scripts.json")
+            and os.path.exists(f"{path_prefix}{dataset}/test_dataset.json")
+            and os.path.exists(f"{path_prefix}{dataset}/train_dataset.json")
+        ):
+            preprocessed_dataset_dropdown_options.append(
+                {"label": dataset, "value": dataset}
+            )
+
 def update_available_genres():
     available_genres.clear()
     for genre in utils.available_genres():
         available_genres.append({"label": genre, "value": genre})
-    
+
     if len(available_genres) > 0:
         available_genres.insert(0, {"label": "all", "value": "all"})
+
 
 def update_compared_models():
     compared_models.clear()
     for evaluation in utils.models_with_metrics():
         model, dataset, _, genres, metrics = evaluation
         compared_models.append(
-            html.Div(children=[
-                # TODO: assign a color and shape to each model
-                html.Span(f"{model} - {dataset} - {', '.join(genres)}", style={"font-weight": "bold"}),
-                html.Span(f" evaluated on {metrics['dataset']} data set with {metrics['samples']} samples:"),
-                # TODO: instead of lists, create plots for each metric comparing the models
-                html.Ul(children=
-                    [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), metrics.items())]
-                )
-            ])
+            html.Div(
+                children=[
+                    # TODO: assign a color and shape to each model
+                    html.Span(
+                        f"{model} - {dataset} - {', '.join(genres)}",
+                        style={"font-weight": "bold"},
+                    ),
+                    html.Span(
+                        f" evaluated on {metrics['dataset']} data set with {metrics['samples']} samples:"
+                    ),
+                    # TODO: instead of lists, create plots for each metric comparing the models
+                    html.Ul(
+                        children=[
+                            html.Li(f"{metric}: {value}")
+                            for metric, value in filter(
+                                lambda x: x[0].startswith("Average"),
+                                metrics.items(),
+                            )
+                        ]
+                    ),
+                ]
+            )
         )
+
+
+
+
 
 if __name__ == "__main__":
     update_available_genres()
