@@ -29,10 +29,7 @@ def train(model_name: str, genres: list[str], dataset: str):
     config["model"] = model_name
     config["hash"] = dir_name
     config["dataset"] = dataset
-
-    full_dir_name = f"./models/{dir_name}"
-    os.makedirs(full_dir_name, exist_ok=True)
-
+    
     # load train dataset
     X_train = np.load(f"./data/sentence_transformer_model/{dataset}/X_train_embeddings_{model_name}.npy")
     y_train = np.load(f"./data/sentence_transformer_model/{dataset}/y_train_labels.npy")
@@ -104,6 +101,8 @@ def train(model_name: str, genres: list[str], dataset: str):
     model.fit(X_train, y_train, epochs=best_epoch, batch_size=128)
 
     # save the model and config
+    full_dir_name = f"./models/{dir_name}"
+    os.makedirs(full_dir_name, exist_ok=True)
     model.save(f"{full_dir_name}/model.h5")
     with open(f"{full_dir_name}/config.json", "w") as f:
         json.dump(config, f, indent=2)

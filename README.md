@@ -9,6 +9,16 @@ There are currently two available models, which perform the prediction, a statis
 
 ## Repository Structure
 ```
+├── screenshots                               // screenshots of the application
+│   ├── evaluation.png
+│   ├── datasets.png
+│   ├── demo.mp4
+│   ├── prediction.png
+│   └── training.png
+├── scripts                                   // test scripts to try out prediction
+│   ├── alien.txt
+│   ├── batman.txt
+│   └── toy_story.txt
 ├── src                                       // source files of the project
 │   ├── dataset_preparation                   // source file for pre-processing the scraped data sets  
 │   │   ├── characters_cleaning.py
@@ -173,12 +183,18 @@ In this tab, you can predict genres based using the trained models.
 * **Predict Genre**: Select a trained model from the dropdown menu. Enter the number of genres to predict and provide a script in the textarea. We also provide some test scripts in the `scripts/` directory for your convenience. Click the `Predict` button to perform the prediction. The predictions will be displayed once successfully completed.
 
 ### Evaluation Tab
+![evaluation](./screenshots/evaluation.png)
 In this tab, you can evaluate trained models and compare their performance.
 
 * **Model Evaluation**: Choose a trained model and a data set from the respective dropdown menus. Click the `Evaluate` button to evaluate the selected model's performance. The evaluation results will be shown once successfully completed.
 
-* **Model Comparison**: This section provides a visual comparison of the already evaluated models. We allow to train a model on one of the 3 training data sets (*imsdb*, *dailyscript* and *merged*) and we also allow to test any model, regardless on which training data set it was trained, on the respective 3 test data sets. Therefore, we display 9 plots for all combinations of the training and test data sets. Each of these 9 plots then compare models trained and evaluated on the given trainings and test data sets. Additionally, we allow you to change the the displayed evaluation metric as one of the following:
+* **Model Comparison**: This section provides a visual comparison of the already evaluated models. We allow to train a model on one of the 3 training data sets (*imsdb*, *dailyscript* and *merged*) and we also allow to test any model, regardless on which training data set it was trained, on the respective 3 test data sets. We display the evaluation as 4 bar plots, each for one of the following evaluation metrics:
     * intersection over union, 
     * precision, 
     * recall and
     * F1 score. 
+
+## Demo
+The following video captures the functionality of the whole web application:  
+<video src="./screenshots/demo.mp4" controls="controls">
+</video>

@@ -85,7 +85,7 @@ def evaluate(genres: list[str], model_dataset: str = "imsdb", evaluation_dataset
 
     # save average metrics
     with open(f"{path}/metrics.json", "w") as f:
-        json.dump(average_metrics, f, indent=2)
+        json.dump(metrics, f, indent=2)
 
     with open(f"{path}/predicted_truth.json", "w") as f:
         json.dump(results, f, indent=2)
