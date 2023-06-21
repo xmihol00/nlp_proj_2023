@@ -2,9 +2,12 @@ import os
 import sys
 import time
 import dash
+import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+
+import plotly.express as px
 
 # Import necessary libraries for training, predicting, and evaluating the model
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -721,6 +724,7 @@ def predict_genre(n_clicks, script, model_hash, num_genres):
     [
         Output("evaluation-output", "children"),
         Output("evaluation-results", "children"),
+        Output("model-comparison", "children"),
     ],
     [Input("evaluate-button", "n_clicks")],
     [
@@ -744,6 +748,8 @@ def evaluate_model(n_clicks, model_hash, dataset):
                 dataset,
             )
 
+        update_compared_models()
+
         return (
             html.Div(f"Model evaluated on {total_predicted} samples:"),
             [
@@ -753,6 +759,7 @@ def evaluate_model(n_clicks, model_hash, dataset):
                     average_metrics.items(),
                 )
             ],
+            compared_models,
         )
 
 
@@ -770,9 +777,7 @@ def preprocess_dataset(n_clicks, dataset):
     if n_clicks is not None:
         if dataset == "merged":
             os.system(f"./src/dataset_preparation/data_prep_pipeline.sh imsdb")
-            os.system(
-                f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript"
-            )
+            os.system(f"./src/dataset_preparation/data_prep_pipeline.sh dailyscript")
             transformer_genres.extract_genres()
             statistical_genres.extract_genres()
             transformer_dataset_split.split_dataset("merged")
@@ -934,21 +939,36 @@ def update_available_genres():
 
 def update_compared_models():
     compared_models.clear()
+    metrics = ["Average F1", "Average precision", "Average recall", "Average IoU"]
+    columns = ["model", "evaluation_dataset"]
+    columns += metrics
+    rows = []
     for evaluation in utils.models_with_metrics():
         model, dataset, _, genres, metric_dataset_dict = evaluation
-        for evaluation_dataset, metrics in metric_dataset_dict.items():
-            compared_models.append(
-                html.Div(children=[
-                    # TODO: assign a color and shape to each model
-                    html.Span(f"{model} - {dataset} - {', '.join(genres)}", style={"font-weight": "bold"}),
-                    html.Span(f" evaluated on {evaluation_dataset} data set with {metrics['samples']} samples:"),
-                    # TODO: instead of lists, create plots for each metric comparing the models
-                    html.Ul(children=
-                        [html.Li(f"{metric}: {value}") for metric, value in filter(lambda x: x[0].startswith('Average'), metrics.items())]
-                    )
-                ])
-            )
+        model_name = f"{model} - {dataset} - {', '.join(sorted(genres))}"
+        row = {}
+        row["model"] = model_name
+        for key, value in metric_dataset_dict.items():
+            new_row = row.copy()
+            if isinstance(value, dict) and key != dataset:
+                for metric in metrics:
+                    new_row[metric] = value[metric]
+                new_row["evaluation_dataset"] = key
+                rows.append(new_row)
+        new_row = row.copy()
+        for metric in metrics:
+            new_row[metric] = metric_dataset_dict[metric]
+        new_row["evaluation_dataset"] = dataset
+        rows.append(new_row)
 
+    plot_dataframe = pd.DataFrame(rows, columns=columns)
+
+    for metric in metrics:
+        graph = dcc.Graph(
+            id="compared-models-graph",
+            figure=px.bar(plot_dataframe, x="evaluation_dataset", y=metric, color="model", barmode="group", title=metric)
+        )
+        compared_models.append(graph)
 
 if __name__ == "__main__":
     update_available_genres()
