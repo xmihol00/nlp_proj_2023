@@ -51,17 +51,42 @@ def train(model_name: str, genres: list[str], dataset: str):
     print(f"X_test shape: {X_test.shape}")
     print(f"y_test shape: {y_test.shape}")
 
+
     # model
-    model = tf.keras.models.Sequential(
-        [
-            tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
-            tf.keras.layers.Dropout(0.25),
-            tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
-            tf.keras.layers.Dropout(0.25),
-            tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
-            tf.keras.layers.Dense(y_train.shape[1], activation="sigmoid")
-        ]
-    )
+    HIDDEN_LAYERS = 4
+    if HIDDEN_LAYERS == 2:
+        model = tf.keras.models.Sequential(
+            [
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dense(y_train.shape[1], activation="sigmoid")
+            ]
+        )
+    elif HIDDEN_LAYERS == 3:
+        model = tf.keras.models.Sequential(
+            [
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dense(y_train.shape[1], activation="sigmoid")
+            ]
+        )
+    elif HIDDEN_LAYERS == 4:
+        model = tf.keras.models.Sequential(
+            [
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dropout(0.25),
+                tf.keras.layers.Dense(X_train.shape[1], activation="relu", input_shape=(X_train.shape[1],)),
+                tf.keras.layers.Dense(y_train.shape[1], activation="sigmoid")
+            ]
+        )
 
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 

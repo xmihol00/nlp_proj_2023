@@ -23,7 +23,7 @@ class DailyscriptScraper:
     def _get_soup(self, search_query):
         resp = urllib.request.urlopen(search_query)
         soup = BeautifulSoup(resp, "html.parser")
-        return soup
+        return soup # convert to DOM object
 
     def _title_already_scraped(self, title):
         try:
@@ -45,7 +45,7 @@ class DailyscriptScraper:
             if movie_list is None:
                 continue
             entries = movie_list.find_all("p")
-            for entry in entries:
+            for entry in entries: # find URLs to movie scripts
                 reference = entry.find("a")
                 result.append(
                     {
@@ -98,23 +98,23 @@ class DailyscriptScraper:
 
     def _get_genres_from_first_imdb_result(self, title: str):
         parsed_title = title.replace(" ", "+")
-        search_query = (
+        search_query = ( # search for movie title on IMDB
             "https://www.imdb.com/search/"
             f"title/?title={parsed_title}&title_type=feature,tv_movie,short"
         )
         soup = self._get_soup(search_query)
         try:
-            genres = soup.find("span", attrs={"class": "genre"}).text
+            genres = soup.find("span", attrs={"class": "genre"}).text # retrieve genres
         except AttributeError:
             raise GenreError
-        genres = genres.replace("\n", "").replace(" ", "").split(",")
+        genres = genres.replace("\n", "").replace(" ", "").split(",") # format the genres into a list
         return genres
 
     def _save_data(self, **kwargs):
-        if not os.path.exists(self.out_file):
+        if not os.path.exists(self.out_file): # create file if it doesn't exist
             with open(self.out_file, mode="w") as f:
-                json.dump([kwargs], f)
-        else:
+                json.dump([kwargs], f) 
+        else: # append to file if it does exist
             with open(self.out_file, mode="r+") as f:
                 data = json.load(f)
                 data.append(kwargs)

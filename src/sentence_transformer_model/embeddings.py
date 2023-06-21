@@ -9,13 +9,7 @@ def generate_embeddings(model_name: str, path: str):
     if path[-1] == "/":
         path = path[:-1]
 
-    # check available device
-    if torch.cuda.is_available():
-        device = "cuda"
-    else:
-        device = "cpu"
-
-    model = SentenceTransformer(model_name, device=device)
+    model = SentenceTransformer(model_name, device= "cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using model: {model_name}")
 
     # load train dataset
@@ -25,11 +19,19 @@ def generate_embeddings(model_name: str, path: str):
     # get the shape of the converted train dataset and create a numpy array with the same shape
     train_dataset_embeddings = np.zeros((len(train_dataset), model.get_sentence_embedding_dimension()))
 
-    # convert each sample in the train dataset to an embedding
-    for i, sample in enumerate(train_dataset):
-        train_dataset_embeddings[i] = model.encode(sample["script"])
-        if i % 100 == 0:
-            print(f"Converted {i} samples to embeddings")
+    try:
+        # convert each sample in the train dataset to an embedding
+        for i, sample in enumerate(train_dataset):
+            train_dataset_embeddings[i] = model.encode(sample["script"])
+            if i % 100 == 0:
+                print(f"Converted {i} samples to embeddings")
+    except:
+        model = SentenceTransformer(model_name, device="cpu")
+        # try again on cpu if GPU fails
+        for i, sample in enumerate(train_dataset):
+            train_dataset_embeddings[i] = model.encode(sample["script"])
+            if i % 100 == 0:
+                print(f"Converted {i} samples to embeddings")
 
     # save the train dataset embeddings
     np.save(f"{path}/X_train_embeddings_{model_name}.npy", train_dataset_embeddings)
