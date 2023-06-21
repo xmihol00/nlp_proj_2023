@@ -650,7 +650,7 @@ def train_model(n_clicks, dataset, model, genres):
             genres = []
 
         if model == "statistical":
-            statistical_training.train(genres, dataset)
+            statistical_training.train(dataset, genres)
         else:
             transformer_training.train(model, genres, dataset)
 
@@ -761,6 +761,7 @@ def evaluate_model(n_clicks, model_hash, dataset):
             ],
             compared_models,
         )
+    return (html.Div(""), [], [])
 
 
 @app.callback(
@@ -870,7 +871,7 @@ def update_models_with_embeddings():
         {"label": "statistical", "value": "statistical"}
     )
     for dataset in dataset_dropdown_options:
-        datasets_with_embeddings[dataset].clear()
+        datasets_with_embeddings[dataset] = ["statistical"]
 
     for model in models:
         has_embeddings = False
@@ -964,10 +965,23 @@ def update_compared_models():
     plot_dataframe = pd.DataFrame(rows, columns=columns)
 
     for metric in metrics:
+        fig = px.bar(plot_dataframe, x="evaluation_dataset", y=metric, color="model", barmode="group")
+        # Set y max 2.0
+        fig.update_yaxes(range=[0, 1.0])
+        # Update height of figure to 800
+        fig.update_layout(height=800)
+        fig.update_layout(legend=dict(
+            yanchor="bottom",
+            y=1,
+            xanchor="left",
+            x=0,
+        ))
         graph = dcc.Graph(
-            id="compared-models-graph",
-            figure=px.bar(plot_dataframe, x="evaluation_dataset", y=metric, color="model", barmode="group", title=metric)
+            id=f"compared-models-graph-{metric}",
+            figure=fig,
         )
+        compared_models.append(html.H4(f"{metric}"))
+        compared_models.append(html.Br())
         compared_models.append(graph)
 
 if __name__ == "__main__":
