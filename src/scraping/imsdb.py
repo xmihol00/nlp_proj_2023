@@ -1,4 +1,3 @@
-import json
 import re
 import os
 import urllib.request
@@ -26,32 +25,32 @@ class ImsdbSpider(CrawlSpider):
             LinkExtractor(
                 allow=re.escape("https://imsdb.com/Movie%20Scripts/")
             ),
-            callback="parse_item",
+            callback="parse_item", # callback function to parse the page
         ),
     )
     custom_settings = {
-        "ROBOTSTXT_OBEY": False,
+        "ROBOTSTXT_OBEY": False,   # ignore robots.txt
     }
 
     def _get_genres_from_links(self, links) -> List[str]:
         genres = []
         for link in links:
             ref = link.get("href")
-            if "genre" in ref:
+            if "genre" in ref:  # locate the correct link
                 genres.append(link.text)
         return genres
 
     def _get_script_from_links(self, links):
         script_link = None
         for link in links:
-            if "Read" in link.text and "Script" in link.text:
+            if "Read" in link.text and "Script" in link.text:  # locate the correct link
                 script_link = self.base_url + link.get("href")
         response = urllib.request.urlopen(script_link)
         soup = BeautifulSoup(response, "html.parser")
         return str(soup.find("td", {"class": "scrtext"}).find("pre").contents)
 
     def parse_item(self, response):
-        soup = BeautifulSoup(response.text)
+        soup = BeautifulSoup(response.text) # convert to DOM object
         imdbs_box = soup.find(text="Genres").parent.parent
         links = imdbs_box.find_all("a")
         title = (
@@ -61,7 +60,7 @@ class ImsdbSpider(CrawlSpider):
         )
         genres = self._get_genres_from_links(links)
         script = self._get_script_from_links(links)
-        yield {"title": title, "genres": genres, "script": script}
+        yield {"title": title, "genres": genres, "script": script} # return newly scraped movie script
 
 
 class ImsdbScraper():
@@ -85,7 +84,7 @@ if __name__ == "__main__":
     ImsdbScraper().run(overwrite=True)
     with open("./data/scraped_data/scraped_imsdb_data.json", "r") as f:
         data = f.read()
-        data = re.sub(r"^\]\[$", ",", data)
+        data = re.sub(r"^\]\[$", ",", data) # fix json formatting of multiple array objects into a single array
     
     with open("./data/scraped_data/scraped_imsdb_data.json", "w") as f:
         f.write(data)

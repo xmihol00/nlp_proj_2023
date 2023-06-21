@@ -70,15 +70,13 @@ Third, the advised and fastest flow in the app is to scrape the `imsdb` data set
 Last, since the web scraping and mainly generation of the embeddings can run even for several hours on HW without GPU support, we also provide all the data sets scraped and with generated embeddings for all the available models via this link [https://cloud.tugraz.at/index.php/s/ocgNRz5EwSt9A4k](https://cloud.tugraz.at/index.php/s/ocgNRz5EwSt9A4k). Extract the file into the root of the project.
 
 ## Web Scraping
-### Imsdb scraper
-This scraper extracts movie script data from the IMSDb website. 
-It utilizes the Scrapy library to crawl and scrape the website. The `process_links()` function is a utility function that cleans the URLs of the links. The `ImsdbSpider` class is a custom spider that extends the `CrawlSpider` class from Scrapy. It specifies the target website, the starting URL, and the rules for following links. The class also includes methods for extracting genres and scripts from the scraped data. The `parse_item()` method is the callback function that handles the response and extracts relevant information. The `ImsdbScraper` class is responsible for running the scraping process and saving the scraped data to a JSON file.
-Within the `parse_item()` method, after obtaining the response from the crawled URL, BeautifulSoup is used to parse the HTML content. It searches for the element that contains the genres information by finding the text "Genres" and navigating to its parent. From there, it finds all the `<a>` tags within that element. These links are then passed to the methods `_get_genres_from_links()` and `_get_script_from_links()` to extract the genres and script, respectively. The extracted title, genres, and script are yielded as a dictionary for each item scraped.
+We are using 3 data sets to train our models. First two data sets are obtained through web scraping, the third data set is created by merging and deduplicating the two scraped data sets.
 
+### Imsdb Scraper
+The Imsdb scraper extracts movie scripts and their respective genres from the [IMSDb](https://imsdb.com) website. It utilizes the `Scrapy` library to crawl and scrape the website. Furthermore, we are extending the functionality of the `Scrapy` library by specifying the target website, the starting URL, and the rules on how to follow links. Then, we are using the `bs4` library for extracting genres, the script title and the script itself from the scraped data. The extracted relevant information is later saved into a JSON file.
 
-### Dailyscript scraper
-The `DailyscriptScraper` class is designed to scrape movie scripts and genres from the "https://www.dailyscript.com/" website. It utilizes BeautifulSoup for HTML parsing and IMDb for genre information. The class includes various private methods, such as `_get_soup()` to retrieve webpage content, `_title_already_scraped()` to check if a movie has already been scraped, `_extract_movie_titles_and_script_links()` to obtain movie titles and script links, `_get_script()` to fetch movie scripts, `_get_genres_from_first_imdb_result()` to retrieve genres from IMDb, and `_save_data()` to store the scraped data in a JSON file. The main `run()` method orchestrates the scraping process, iterating through movies, checking their status, retrieving genres and scripts, and saving the data.
-
+### Dailyscript Scraper
+The Dailyscript scraper is designed to scrape movie scripts from [The Daily Script](https://www.dailyscript.com/) website and genres from the [Imdb](https://www.imdb.com) website. It again utilizes the `bs4` library for HTML parsing. However, this time we are using a different library, the `urllib` library, for crawling both of the websites. 
 
 ## Cleaning and Pre-processing
 The web-scraped data are partial HTML pages still with HTML tags left. Furthermore, the scripts itself needs cleaning and pre-processing, as there are many special characters unnecessary spaces etc., which is accomplished by the following pipeline:
@@ -118,64 +116,69 @@ The prediction is performed by spilling the movies script into samples with 256 
 
 The performance of the machine learning models trained on the `merged` data set and evaluated on 121 test samples is summarized below (performance will vary depending on the weigh initialization as we are not using a fixed seed for better interactivity):
 * `all-mpnet-base-v2`:
-    * Average IoU: 0.467
-    * Average recall: 0.562
-    * Average precision: 0.657
-    * Average F1 score: 0.572
+    * Average IoU: 0.484
+    * Average recall: 0.566
+    * Average precision: 0.680
+    * Average F1: 0.585
 
 * `all-MiniLM-L12-v2`:
-    * Average IoU: 0.325
-    * Average recall: 0.344
-    * Average precision: 0.640
-    * Average F1 score: 0.426
+    * Average IoU: 0.362
+    * Average recall: 0.406
+    * Average precision: 0.639
+    * Average F1: 0.465
 
 * `all-distilroberta-v1`:
-    * Average IoU: 0.447
-    * Average recall: 0.500
-    * Average precision: 0.687
-    * Average F1 score: 0.551
+    * Average IoU: 0.452
+    * Average recall: 0.525
+    * Average precision: 0.670
+    * Average F1: 0.553
 
 * `multi-qa-mpnet-base-dot-v1`:
-    * Average IoU: 0.444
-    * Average recall: 0.533
-    * Average precision: 0.626
-    * Average F1 score: 0.542
+    * Average IoU: 0.410
+    * Average recall: 0.486
+    * Average precision: 0.633
+    * Average F1: 0.515
 
 * `average_word_embeddings_glove.6B.300d`:
-    * Average IoU: 0.390
-    * Average recall: 0.434
-    * Average precision: 0.676
-    * Average F1 score: 0.498
+    * Average IoU: 0.405
+    * Average recall: 0.456
+    * Average precision: 0.663
+    * Average F1: 0.511
 
 ## Web Application
-
-The web application is implemented as a dash app. It consists of several tabs that provide different functionalities for data processing, model training, genre prediction, and model evaluation. Each tab serves a specific purpose and offers intuitive user interfaces for easy interaction.
+The web application is implemented the `dash` library. The web application consists of several tabs that provide different functionalities for data processing, model training, genre prediction and model evaluation. Each tab serves a specific purpose and offers intuitive user interface for easy interactions.
 
 ### Data Sets Tab
-In this tab, you can perform web scraping and data pre-processing tasks.  
-For each step the previous step has to be executed at least once to work.
+![datasets](./screenshots/datasets.png)
+In this tab, you can perform web scraping and data pre-processing tasks. For each step the previous step has to be executed at least once to work.
 
-- **Web Scraping**: Select a data set from the dropdown menu and click the "Web Scrape" button to initiate the web scraping process. The scraped data will be displayed in a loading component.
+* **Web Scraping**: Select a data set from the dropdown menu and click the `Web Scrape` button to initiate the web scraping process. It will take several minutes. A message will be displayed after the web scraping was successfully completed.
 
-- **Pre-process**: Choose a data set for pre-processing using the dropdown menu. Click the "Pre-process" button to start the pre-processing. The pre-processed output will be shown in a loading component.
+* **Pre-process**: Choose a data set for pre-processing using the dropdown menu. Click the `Pre-process` button to start the pre-processing. A message will be displayed after the pre-processed was successfully completed.
 
-- **Generate Embedding**: Select a data set and a model from the respective dropdown menus. Click the "Generate Embedding" button to generate embeddings for the chosen data set. The generated embeddings will be displayed in a loading component.
+* **Generate Embedding**: Select a data set and a model from the respective dropdown menus. Click the `Generate Embeddings` button to generate embeddings for the chosen model and data set. It will again take several minutes or hours depending on the chosen model and your HW capabilities. A message will be displayed after the embeddings were successfully generated.
 
 ### Train Tab
-In this tab, you can train and retrain models.
+![prediction](./screenshots/training.png)
+In this tab, you can train and re-train models.
 
-- **Training**: Choose a model and a data set from the dropdown menus. Additionally, select the desired genres for training (multi-select is available). Click the "Train" button to begin the training process. The progress will be shown in a loading component.
+* **Training**: Choose a model and a data set from the respective dropdown menus. Additionally, select the desired genres, on which the model should be trained using the available multi-select. Click the `Train` button to begin the training process. It will take several minutes depending on the chosen model and your HW capabilities. A message will be displayed after the model was successfully trained.
 
-- **Retrain**: Select a trained model from the dropdown menu and click the "Retrain" button to initiate the retraining process.
+* **Retrain**: Select already trained model from the dropdown menu and click the `Retrain` button to initiate the re-training process of the selected model with a different weight initialization. It will take several minutes depending on the chosen model and your HW capabilities. A message will be displayed after the model was successfully re-trained.
 
 ### Prediction Tab
-In this tab, you can predict genres based on trained models.
+![prediction](./screenshots/prediction.png)
+In this tab, you can predict genres based using the trained models.
 
-- **Predict Genre**: Select a trained model from the dropdown menu. Enter the number of genres to predict and provide a script in the textarea. Click the "Predict" button to generate genre predictions. The predictions will be displayed in a loading component.
+* **Predict Genre**: Select a trained model from the dropdown menu. Enter the number of genres to predict and provide a script in the textarea. We also provide some test scripts in the `scripts/` directory for your convenience. Click the `Predict` button to perform the prediction. The predictions will be displayed once successfully completed.
 
 ### Evaluation Tab
 In this tab, you can evaluate trained models and compare their performance.
 
-- **Model Evaluation**: Choose a trained model and a data set from the respective dropdown menus. Click the "Evaluate" button to evaluate the selected model's performance. The evaluation results will be shown in a loading component.
+* **Model Evaluation**: Choose a trained model and a data set from the respective dropdown menus. Click the `Evaluate` button to evaluate the selected model's performance. The evaluation results will be shown once successfully completed.
 
-- **Model Comparison**: This section provides a visual comparison of models
+* **Model Comparison**: This section provides a visual comparison of the already evaluated models. We allow to train a model on one of the 3 training data sets (*imsdb*, *dailyscript* and *merged*) and we also allow to test any model, regardless on which training data set it was trained, on the respective 3 test data sets. Therefore, we display 9 plots for all combinations of the training and test data sets. Each of these 9 plots then compare models trained and evaluated on the given trainings and test data sets. Additionally, we allow you to change the the displayed evaluation metric as one of the following:
+    * intersection over union, 
+    * precision, 
+    * recall and
+    * F1 score. 
