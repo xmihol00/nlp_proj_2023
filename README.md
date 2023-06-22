@@ -7,6 +7,11 @@ This repository contains an implementation of a movie genre classification web a
 
 There are currently two available models, which perform the prediction, a statistical model and a machine learning model.
 
+## Authors
+* David Mihola (xmihol00@stud.fit.vutbr.cz)
+* Johannes Pesenhofer (johannes.pesenhofer@student.tugraz.at)
+Please, contact us in case of encountering bugs in the web application.
+
 ## Repository Structure
 ```
 ├── screenshots                               // screenshots of the application
@@ -68,6 +73,7 @@ First, install all necessary Python dependencies with:
 ```
 pip install -r requirements.txt
 ```
+and download stemming corpora for the `nltk` library if not done automatically when running the application.
 
 Second, run the web application with:
 ```

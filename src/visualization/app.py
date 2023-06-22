@@ -636,23 +636,28 @@ def predict_genre(n_clicks, script, model_hash, num_genres):
 )
 def evaluate_model(n_clicks, model_hash, dataset):
     if n_clicks is not None:
-        model_config = utils.get_model_config_from_hash(model_hash)
-        if model_config["model"] == "statistical":
-            total_predicted, average_metrics = statistical_evaluation.evaluate(
-                model_config["genres"], model_config["dataset"], dataset
-            )
-        else:
-            total_predicted, average_metrics = transformer_evaluation.evaluate(
-                model_config["model"],
-                model_config["genres"],
-                model_config["dataset"],
-                dataset,
-            )
+        try:
+            model_config = utils.get_model_config_from_hash(model_hash)
+            if model_config["model"] == "statistical":
+                total_predicted, average_metrics = statistical_evaluation.evaluate(
+                    model_config["genres"], model_config["dataset"], dataset
+                )
+            else:
+                total_predicted, average_metrics = transformer_evaluation.evaluate(
+                    model_config["model"],
+                    model_config["genres"],
+                    model_config["dataset"],
+                    dataset,
+                )
+            message = f"Model evaluated on {total_predicted} samples:"
+        except:
+            message = "Embeddings not found for the selected dataset. Please run the embeddings step first."
+            average_metrics = {}
 
         update_compared_models()
 
         return (
-            html.Div(f"Model evaluated on {total_predicted} samples:"),
+            html.Div(message),
             [
                 html.Li(f"{metric}: {value}")
                 for metric, value in filter(
@@ -782,7 +787,8 @@ def update_models_with_embeddings():
         {"label": "statistical", "value": "statistical"}
     )
     for dataset in dataset_dropdown_options:
-        datasets_with_embeddings[dataset] = ["statistical"]
+        if os.path.exists(f"./data/statistical_model/{dataset}"):
+            datasets_with_embeddings[dataset] = ["statistical"]
 
     for model in models:
         has_embeddings = False
