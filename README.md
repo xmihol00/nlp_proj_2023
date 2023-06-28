@@ -95,7 +95,7 @@ The Imsdb scraper extracts movie scripts and their respective genres from the [I
 The Dailyscript scraper is designed to scrape movie scripts from [The Daily Script](https://www.dailyscript.com/) website and genres from the [Imdb](https://www.imdb.com) website. It again utilizes the `bs4` library for HTML parsing. However, this time we are using a different library, the `urllib` library, for crawling both of the websites. 
 
 ## Cleaning and Pre-processing
-The web-scraped data are partial HTML pages still with HTML tags left. Furthermore, the scripts itself needs cleaning and pre-processing, as there are many special characters unnecessary spaces etc., which is accomplished by the following pipeline:
+The web-scraped data are partial HTML pages still with HTML tags left. Furthermore, the scripts itself need cleaning and pre-processing, as there are many special characters unnecessary spaces etc., which is accomplished by the following pipeline:
 1. cleaning of special characters,
 2. removal of HTML tags,
 3. removal of punctuation characters,
@@ -107,7 +107,7 @@ The web-scraped data are partial HTML pages still with HTML tags left. Furthermo
 9. cleaning of the genre labels.
 
 ## Statistical Model
-The statistical model is based on word counting and its primary role is to asses the performance of the machine learning model. Occurences of words are counted for each genre during training of the model. The prediction is then simply performed by looking up and summing the learned numbers of occurences of words in the predicted sample for all genres. The most probable genre or multiple genres is selected as the one with the largest sum(s). 
+The statistical model is based on word counting and its primary role is to asses the performance of the machine learning models against. Occurrences of words are counted for each genre during training of the model. The prediction is then simply performed by looking up and summing the learned counts of occurrences of words appearing in the predicted sample for all genres. The most probable genres are selected as those with the largest sums. 
 
 The performance of the statistical model trained on the `merged` data set and evaluated on 121 test samples is summarized below:
 * Average IoU: 0.289

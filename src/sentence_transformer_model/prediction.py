@@ -44,6 +44,8 @@ def predict_string(model_name: str, genres: list[str], dataset: str, script: str
 
     # create embeddings
     script_embeddings = sentence_transformer.encode(script_parts)
+    if script_embeddings.shape[0] == 0:
+        return []
 
     # predict
     predictions = model.predict(script_embeddings)

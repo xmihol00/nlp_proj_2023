@@ -877,8 +877,8 @@ def update_compared_models():
         fig = px.bar(plot_dataframe, x="evaluation_dataset", y=metric, color="model", barmode="group")
         # Set y max 2.0
         fig.update_yaxes(range=[0, 1.02])
-        # Update height of figure to 800
-        fig.update_layout(height=800)
+        # Update height of figure to 1000
+        fig.update_layout(height=1000)
         fig.update_layout(legend=dict(
             yanchor="bottom",
             y=1,
