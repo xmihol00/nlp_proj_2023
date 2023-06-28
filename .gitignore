@@ -136,6 +136,5 @@ models/
 script.txt
 *.toml
 data.zip
-data_stash/
-models_stash/
-Group-Architecture-1.zip
+*_stash/
+*.zip
