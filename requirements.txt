@@ -4,6 +4,7 @@ dash_bootstrap_components==1.4.1
 nltk==3.7
 numpy==1.23.1
 pandas==1.5.0
+plotly==5.14.1
 Scrapy==2.8.0
 sentence_transformers==2.2.2
 tensorflow==2.10.0
